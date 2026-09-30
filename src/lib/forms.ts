@@ -1,0 +1,48 @@
+export type Field = { name: string; label: string; type: "text" | "email" | "tel" | "select" | "textarea" | "date" | "number" | "file" | "checkbox"; required?: boolean; options?: string[]; hint?: string; max?: number };
+export type FormCfg = { kind: "enquiry" | "profile"; fields: Field[] };
+
+export const forms: Record<"enquiry" | "profile", FormCfg> = {
+  enquiry: { kind: "enquiry", fields: [
+    { name: "company", label: "Company name", type: "text", required: true },
+    { name: "contact", label: "Contact person", type: "text", required: true },
+    { name: "email", label: "Business email", type: "email", required: true },
+    { name: "phone", label: "Phone / WhatsApp", type: "tel", required: true },
+    { name: "country", label: "Country", type: "text" },
+    { name: "vesselName", label: "Vessel name", type: "text", hint: "Optional at first enquiry" },
+    { name: "vesselType", label: "Vessel type", type: "text", required: true },
+    { name: "flag", label: "Flag", type: "text" },
+    { name: "capacity", label: "DWT / GT / capacity as applicable", type: "text" },
+    { name: "yearBuilt", label: "Year built", type: "number" },
+    { name: "tradingArea", label: "Current trading area", type: "text" },
+    { name: "service", label: "Service required", type: "select", options: ["Commercial", "Technical", "Crew", "Consultancy", "Integrated"] },
+    { name: "vessels", label: "Number of vessels", type: "number" },
+    { name: "currentMgmt", label: "Current management arrangement", type: "text" },
+    { name: "startDate", label: "Required start date", type: "date" },
+    { name: "requirement", label: "Brief requirement / challenge", type: "textarea", required: true, max: 3000 },
+    { name: "attachment", label: "Attachment: vessel particulars", type: "file", hint: "Optional. PDF, DOC, DOCX, JPG or PNG, up to 5 MB." },
+    { name: "consent", label: "I consent to Sea Hawk processing this information as described in the Privacy Policy.", type: "checkbox", required: true },
+  ] },
+  profile: { kind: "profile", fields: [
+    { name: "fullName", label: "Full name as per passport/CDC", type: "text", required: true },
+    { name: "mobile", label: "Mobile number", type: "tel", required: true },
+    { name: "email", label: "Email", type: "email", required: true },
+    { name: "nationality", label: "Nationality", type: "text", required: true },
+    { name: "location", label: "Current city/country", type: "text", required: true },
+    { name: "rank", label: "Rank / position applied for", type: "text", required: true },
+    { name: "seaService", label: "Total sea service", type: "text", required: true },
+    { name: "rankExperience", label: "Rank experience", type: "text" },
+    { name: "vesselExperience", label: "Vessel-type experience", type: "text" },
+    { name: "cdc", label: "CDC details and expiry", type: "text" },
+    { name: "coc", label: "COC / COP details (where relevant)", type: "text" },
+    { name: "stcw", label: "STCW certificates and validity", type: "textarea" },
+    { name: "medical", label: "Medical fitness status and validity", type: "text" },
+    { name: "sid", label: "SID status", type: "text" },
+    { name: "lastVessel", label: "Last vessel / company", type: "text" },
+    { name: "availability", label: "Availability date", type: "date", required: true },
+    { name: "expectedSalary", label: "Expected salary", type: "text", hint: "Optional" },
+    { name: "cv", label: "CV upload", type: "file", required: true, hint: "PDF, DOC or DOCX, up to 5 MB." },
+    { name: "consent", label: "I consent to Sea Hawk processing my personal data as described in the Privacy Policy.", type: "checkbox", required: true },
+    { name: "accurate", label: "I declare that the information I have submitted is accurate.", type: "checkbox", required: true },
+  ] },
+};
+// Not collected at first touch by design (data minimisation): date of birth, passport details, certificate scans. Request after shortlist.
