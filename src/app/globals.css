@@ -4968,6 +4968,55 @@ html, body {
   }
 }
 
+/* ==========================================================================
+   ACCESSIBILITY (98+ SCORE) UTILITIES & TAP TARGET ENHANCEMENTS
+   ========================================================================== */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}
+
+.footer-links a,
+.footer-legal-links a {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.4rem 0 !important;
+  min-height: 44px !important;
+  color: #cbd5e1 !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease !important;
+}
+
+.footer-links a:hover,
+.footer-legal-links a:hover {
+  color: #f1c40f !important;
+  text-decoration: underline !important;
+}
+
+.footer-social-btn {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  transition: background 0.2s ease !important;
+}
+
+.footer-social-btn:hover {
+  background: #d49b18 !important;
+  color: #0b2233 !important;
+}
+
 
 
 

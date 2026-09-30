@@ -24,11 +24,12 @@ export function ConsentBanner() {
   if (!open) return null;
   const choose = (v: string) => { set(v); setOpen(false); if (v === "accepted") loadGA(); };
   return (
-    <div role="dialog" aria-label="Cookie choices" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderTop: "3px solid var(--ink)", padding: "1rem var(--pad)", zIndex: 90 }}>
-      <p style={{ maxWidth: "70ch" }}>We use essential cookies. With your consent we also use analytics to understand how the site is used. See the <Link href="/cookie-policy/">Cookie Policy</Link>.</p>
-      <div className="btns" style={{ marginTop: 0 }}>
-        <button className="btn ghost" onClick={() => choose("rejected")}>Reject all</button>
-        <button className="btn ghost" onClick={() => choose("accepted")}>Accept all</button>
+    <div role="dialog" aria-labelledby="cookie-dialog-title" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#ffffff", borderTop: "3px solid #0b2233", padding: "1rem 1.5rem", zIndex: 9000, boxShadow: "0 -10px 30px rgba(0,0,0,0.15)" }}>
+      <h2 id="cookie-dialog-title" className="sr-only">Cookie Preferences</h2>
+      <p style={{ maxWidth: "70ch", color: "#334155", fontSize: "0.9rem", lineHeight: "1.5" }}>We use essential cookies to operate our website. With your consent, we also use analytics to improve user experience. See our <Link href="/privacy-policy/" style={{ color: "#0b2233", fontWeight: 700, textDecoration: "underline" }}>Privacy Policy</Link>.</p>
+      <div className="btns" style={{ marginTop: "0.75rem", display: "flex", gap: "0.75rem" }}>
+        <button type="button" className="btn ghost" style={{ minHeight: "44px", color: "#0b2233", borderColor: "#0b2233" }} onClick={() => choose("rejected")}>Reject all</button>
+        <button type="button" className="btn" style={{ minHeight: "44px", background: "#0b2233", color: "#ffffff", borderColor: "#0b2233" }} onClick={() => choose("accepted")}>Accept all</button>
       </div>
     </div>);
 }

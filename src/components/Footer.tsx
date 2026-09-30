@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="cols footer-cols">
           {/* Column 1: Company Profile, Description & Social Media */}
           <div className="footer-col brand-col">
-            <h2 className="footer-heading">{site.name}</h2>
+            <h3 className="footer-heading">{site.name}</h3>
             <p className="footer-desc">
               Commercial, technical, crew and marine advisory support for global ship owners, vessel operators and seafarers.
             </p>
@@ -45,7 +45,7 @@ export default function Footer() {
 
           {/* Column 2: Services */}
           <div className="footer-col">
-            <h2 className="footer-heading">Services</h2>
+            <h3 className="footer-heading">Services</h3>
             <ul className="footer-links">
               <li><Link href="/services/commercial-management/">Commercial Management</Link></li>
               <li><Link href="/services/technical-management/">Technical Management</Link></li>
@@ -57,7 +57,7 @@ export default function Footer() {
 
           {/* Column 3: Seafarers & Company */}
           <div className="footer-col">
-            <h2 className="footer-heading">Seafarers &amp; Company</h2>
+            <h3 className="footer-heading">Seafarers &amp; Company</h3>
             <ul className="footer-links">
               <li><Link href="/seafarers/vacancies/">Current Vacancies</Link></li>
               <li><Link href="/seafarers/profile/">Register / Update Profile</Link></li>
@@ -72,7 +72,7 @@ export default function Footer() {
 
           {/* Column 4: Contact & Address (Moved to 4th column as requested) */}
           <div className="footer-col address-col">
-            <h2 className="footer-heading">Contact &amp; Location</h2>
+            <h3 className="footer-heading">Contact &amp; Location</h3>
             <p className="footer-company-legal">{site.legalName}</p>
             <address className="footer-address">
               Unit No. S-28, Eighth Floor, URBTECH NPX, Sector 153, Noida, Gautam Buddha Nagar, Uttar Pradesh 201301, India

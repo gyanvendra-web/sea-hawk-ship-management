@@ -130,8 +130,8 @@ export default function HeroSlider() {
                   alt={slide.title}
                   fill
                   priority={index === 0}
-                  sizes="100vw"
-                  quality={80}
+                  sizes="(max-width: 768px) 100vw, 100vw"
+                  quality={75}
                   style={{ objectFit: "cover" }}
                 />
               </div>
