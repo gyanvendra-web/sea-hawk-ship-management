@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Authorized Staff Login | Sea Hawk Ship Management",
   description: "Secure authentication portal for Sea Hawk Ship Management authorized staff and recruiters to access operational tools.",
   alternates: { canonical: "/admin/login/" },
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
 export default async function Login({

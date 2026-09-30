@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Executive Staff Dashboard | Sea Hawk Ship Management",
   description: "Internal administrative control panel for Sea Hawk Ship Management fleet leads, seafarer profiles, and audit records.",
   alternates: { canonical: "/admin/" },
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
 };
 
 type R = Record<string, unknown> & {

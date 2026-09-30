@@ -188,6 +188,7 @@ export default function StaffLoginClient({ error }: { error?: string }) {
                   <button
                     type="button"
                     className="eye-toggle-btn"
+                    aria-label={showLoginPass ? "Hide password text" : "Show password text"}
                     onClick={(e) => {
                       e.preventDefault();
                       setShowLoginPass((prev) => !prev);
@@ -203,6 +204,7 @@ export default function StaffLoginClient({ error }: { error?: string }) {
                   <input
                     type="checkbox"
                     checked={rememberMe}
+                    aria-label="Remember session on this device"
                     onChange={(e) => setRememberMe(e.target.checked)}
                   />
                   <span>Remember session</span>
@@ -236,7 +238,7 @@ export default function StaffLoginClient({ error }: { error?: string }) {
       {showForgotModal && (
         <div className="quick-contact-modal-backdrop">
           <div className="quick-contact-modal-box" style={{ maxWidth: "460px" }}>
-            <button type="button" className="quick-contact-modal-close" onClick={closeForgotModal}>
+            <button type="button" className="quick-contact-modal-close" aria-label="Close modal" onClick={closeForgotModal}>
               ✕
             </button>
 

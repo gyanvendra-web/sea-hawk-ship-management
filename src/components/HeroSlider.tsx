@@ -143,7 +143,11 @@ export default function HeroSlider() {
               <div className="wrap hero-content-wrap">
                 <div className="hero-content">
                   <span className="hero-tagline">{slide.tagline}</span>
-                  <h1 className="hero-title">{slide.title}</h1>
+                  {isActive ? (
+                    <h1 className="hero-title">{slide.title}</h1>
+                  ) : (
+                    <h2 className="hero-title">{slide.title}</h2>
+                  )}
                   <p className="hero-description">{slide.description}</p>
                   <div className="btns hero-btns">
                     <Link
@@ -192,6 +196,7 @@ export default function HeroSlider() {
             type="button"
             className={`hero-dot ${index === current ? "active" : ""}`}
             aria-label={`Go to slide ${index + 1}`}
+            aria-current={index === current ? "true" : undefined}
             onClick={() => goToSlide(index)}
           >
             <span className="dot-fill" />
