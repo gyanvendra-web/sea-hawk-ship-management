@@ -85,8 +85,8 @@ public/
 | **Change Page UI / Design** | 🎨 Frontend | `src/app/` or `src/components/` |
 | **Edit CSS / Mobile Responsive Rules** | 🎨 Frontend | `src/app/globals.css` (`@media (max-width: 64rem)` & `@media (max-width: 768px)`) |
 | **Add / Change Form Fields** | 🎨 Frontend | `src/components/ContactForm.tsx` or `HomeQuickForm.tsx` |
-| **Optimize Image Assets / Format** | ⚡ Performance | `public/images/` & `src/lib/images.ts` |
-| **Configure Cache & Next.js** | ⚙️ Backend / Config | `next.config.ts` |
-| **MongoDB Schemas / Fields** | ⚙️ Backend | `src/lib/models/` |
-| **API Endpoints / Server Logic** | ⚙️ Backend | `src/app/api/` |
+| **Optimize Image Assets & Mobile PageSpeed** | ⚡ Performance | `public/images/`, `src/components/HeroSlider.tsx` & `src/lib/images.ts` |
+| **Configure Cache, JS Chunks & Next.js** | ⚙️ Backend / Config | `next.config.ts` |
+| **MongoDB Schemas & Connection Pool** | ⚙️ Backend | `src/lib/mongodb.ts` & `src/lib/models/` |
+| **API Endpoints / Staff Auth Speed** | ⚙️ Backend | `src/app/api/admin/login/route.ts` |
 | **Database URI / Credentials** | ⚙️ Backend | `.env.local` (`MONGODB_URI`) |

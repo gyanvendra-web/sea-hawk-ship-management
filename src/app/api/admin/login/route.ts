@@ -54,11 +54,12 @@ export async function POST(req: Request) {
     let ok = false;
     let loggedUser = user;
     let userRole: "admin" | "recruiter" = "admin";
+    let dbInstance: any = null;
 
     // 1. Check MongoDB StaffUser collection first
     try {
-      const db = await dbConnect();
-      if (db) {
+      dbInstance = await dbConnect();
+      if (dbInstance) {
         const staff = await StaffUser.findOne({
           $or: [{ email: user.toLowerCase() }, { name: user }],
         });
@@ -106,8 +107,7 @@ export async function POST(req: Request) {
 
     // 3. Log Audit Activity
     try {
-      const db = await dbConnect();
-      if (db) {
+      if (dbInstance) {
         await AccessLog.create({
           at: new Date(),
           event: ok ? "login" : "login_failed",

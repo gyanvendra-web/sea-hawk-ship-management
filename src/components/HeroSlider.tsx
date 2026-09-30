@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export type Slide = {
   id: number;
@@ -123,10 +124,17 @@ export default function HeroSlider() {
               aria-hidden={!isActive}
             >
               {/* Background Image */}
-              <div
-                className="hero-slide-bg"
-                style={{ backgroundImage: `url(${slide.image})` }}
-              />
+              <div className="hero-slide-bg">
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  priority={index === 0}
+                  sizes="100vw"
+                  quality={80}
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
 
               {/* Dark Gradient Overlay */}
               <div className="hero-slide-overlay" />
