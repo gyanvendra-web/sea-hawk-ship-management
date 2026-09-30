@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verify, COOKIE } from "@/lib/auth";
@@ -5,6 +6,13 @@ import { readAll, append } from "@/lib/store";
 import { dbConnect } from "@/lib/mongodb";
 import { StaffUser } from "@/lib/models/StaffUser";
 import StaffDashboardClient from "@/components/StaffDashboardClient";
+
+export const metadata: Metadata = {
+  title: "Executive Staff Dashboard | Sea Hawk Ship Management",
+  description: "Internal administrative control panel for Sea Hawk Ship Management fleet leads, seafarer profiles, and audit records.",
+  alternates: { canonical: "/admin/" },
+  robots: { index: false, follow: false },
+};
 
 type R = Record<string, unknown> & {
   id: string;

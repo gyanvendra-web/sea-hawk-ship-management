@@ -409,10 +409,10 @@ export default function Home() {
             </div>
             <div className="social-links-wrap">
               <span className="follow-label">Follow us:</span>
-              <a href="#" aria-label="Facebook" className="social-icon">f</a>
-              <a href="#" aria-label="Twitter" className="social-icon">t</a>
-              <a href="#" aria-label="YouTube" className="social-icon">y</a>
-              <a href="#" aria-label="Instagram" className="social-icon">i</a>
+              <a href="https://facebook.com/seahawkshipmanagement" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-icon">f</a>
+              <a href="https://twitter.com/seahawkgroup" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="social-icon">t</a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="social-icon">y</a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-icon">i</a>
             </div>
           </div>
         </div>

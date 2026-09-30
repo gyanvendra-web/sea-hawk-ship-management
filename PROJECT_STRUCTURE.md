@@ -86,6 +86,7 @@ public/
 | **Edit CSS / Mobile Responsive Rules** | 🎨 Frontend | `src/app/globals.css` (`@media (max-width: 64rem)` & `@media (max-width: 768px)`) |
 | **Add / Change Form Fields** | 🎨 Frontend | `src/components/ContactForm.tsx` or `HomeQuickForm.tsx` |
 | **Optimize Image Assets & Mobile PageSpeed** | ⚡ Performance | `public/images/`, `src/components/HeroSlider.tsx` & `src/lib/images.ts` |
+| **SEO Metadata & Crawlable Links** | 🔍 SEO 100 | `src/app/admin/layout.tsx`, `src/app/admin/login/page.tsx` & `src/components/Footer.tsx` |
 | **Configure Cache, JS Chunks & Next.js** | ⚙️ Backend / Config | `next.config.ts` |
 | **MongoDB Schemas & Connection Pool** | ⚙️ Backend | `src/lib/mongodb.ts` & `src/lib/models/` |
 | **API Endpoints / Staff Auth Speed** | ⚙️ Backend | `src/app/api/admin/login/route.ts` |
