@@ -83,7 +83,7 @@ public/
 | Task | Where to look? | Path |
 | :--- | :--- | :--- |
 | **Change Page UI / Design** | 🎨 Frontend | `src/app/` or `src/components/` |
-| **Edit CSS / Colors / Spacing** | 🎨 Frontend | `src/app/globals.css` |
+| **Edit CSS / Mobile Responsive Rules** | 🎨 Frontend | `src/app/globals.css` (`@media (max-width: 64rem)` & `@media (max-width: 768px)`) |
 | **Add / Change Form Fields** | 🎨 Frontend | `src/components/ContactForm.tsx` or `HomeQuickForm.tsx` |
 | **Optimize Image Assets / Format** | ⚡ Performance | `public/images/` & `src/lib/images.ts` |
 | **Configure Cache & Next.js** | ⚙️ Backend / Config | `next.config.ts` |
