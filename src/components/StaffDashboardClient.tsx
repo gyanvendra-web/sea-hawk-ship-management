@@ -28,18 +28,155 @@ export default function StaffDashboardClient({
   enquiries,
   contacts,
   accessLogs,
+  staffUsers = [],
 }: {
   session: Session;
   profiles: R[];
   enquiries: R[];
   contacts: R[];
   accessLogs: Record<string, unknown>[];
+  staffUsers?: Record<string, unknown>[];
 }) {
-  const [activeTab, setActiveTab] = useState<"profiles" | "enquiries" | "contacts" | "logs">("profiles");
+  const [activeTab, setActiveTab] = useState<"profiles" | "enquiries" | "contacts" | "logs" | "staff">("profiles");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // Staff Registration Form State
+  const [regName, setRegName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regRole, setRegRole] = useState("Manning & Crewing");
+  const [regMessage, setRegMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [regLoading, setRegLoading] = useState(false);
+  const [staffList, setStaffList] = useState<Record<string, unknown>[]>(staffUsers);
+
+  // Top-Right Toast & Detail Popup Modal States
+  const [toast, setToast] = useState<{ type: "success" | "error"; title: string; message: string } | null>(null);
+  const [selectedRecordModal, setSelectedRecordModal] = useState<{ title: string; type: string; data: Record<string, unknown> } | null>(null);
+  const [editingStaff, setEditingStaff] = useState<Record<string, unknown> | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+
   const isAdmin = session.r === "admin";
+
+  const triggerToast = (title: string, message: string, type: "success" | "error" = "success") => {
+    setToast({ type, title, message });
+    setTimeout(() => {
+      setToast(null);
+    }, 5000);
+  };
+
+  // Register New Staff Member
+  const handleRegisterStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegMessage(null);
+    setRegLoading(true);
+
+    try {
+      const res = await fetch("/api/admin/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ name: regName, email: regEmail, phone: regPhone, role: regRole }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        triggerToast("🎉 Staff Registered!", data.message || `Credentials emailed to ${regEmail}`, "success");
+        setStaffList((prev) => [
+          { name: regName, email: regEmail, phone: regPhone, role: regRole, status: "active", createdAt: new Date().toISOString() },
+          ...prev,
+        ]);
+        setRegName("");
+        setRegEmail("");
+        setRegPhone("");
+      } else {
+        setRegMessage({ type: "error", text: data.error || "Failed to create staff account." });
+        triggerToast("⚠️ Registration Failed", data.error || "Could not register staff.", "error");
+      }
+    } catch (err) {
+      setRegMessage({ type: "error", text: "Network error occurred." });
+      triggerToast("⚠️ Network Error", "Connection failed.", "error");
+    } finally {
+      setRegLoading(false);
+    }
+  };
+
+  // Toggle Active / Inactive Status
+  const handleToggleStatus = async (item: Record<string, unknown>) => {
+    const currentStatus = String(item.status || "active").toLowerCase();
+    const newStatus = currentStatus === "active" ? "inactive" : "active";
+
+    try {
+      const res = await fetch("/api/admin/staff-manage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "toggle_status", id: item._id, email: item.email, status: newStatus }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        setStaffList((prev) =>
+          prev.map((s) => (s.email === item.email || s._id === item._id ? { ...s, status: newStatus } : s))
+        );
+      } else {
+        alert(data.error || "Failed to update status.");
+      }
+    } catch (err) {
+      alert("Network error updating status.");
+    }
+  };
+
+  // Delete Staff Member
+  const handleDeleteStaff = async (item: Record<string, unknown>) => {
+    if (!confirm(`Are you sure you want to delete staff account for '${item.name || item.email}'?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/staff-manage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", id: item._id, email: item.email }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        setStaffList((prev) => prev.filter((s) => s.email !== item.email && s._id !== item._id));
+      } else {
+        alert(data.error || "Failed to delete staff member.");
+      }
+    } catch (err) {
+      alert("Network error deleting staff member.");
+    }
+  };
+
+  // Save Edit Staff Details
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStaff) return;
+    setEditLoading(true);
+
+    try {
+      const res = await fetch("/api/admin/staff-manage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", ...editingStaff }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        setStaffList((prev) =>
+          prev.map((s) => (s.email === editingStaff.email || s._id === editingStaff._id ? { ...s, ...editingStaff } : s))
+        );
+        setEditingStaff(null);
+      } else {
+        alert(data.error || "Failed to save staff updates.");
+      }
+    } catch (err) {
+      alert("Network error updating staff member.");
+    } finally {
+      setEditLoading(false);
+    }
+  };
 
   // Filter profiles based on search and status
   const filteredProfiles = profiles.filter((p) => {
@@ -127,6 +264,19 @@ export default function StaffDashboardClient({
 
           {isAdmin && (
             <div
+              className={`dash-stat-card ${activeTab === "staff" ? "active" : ""}`}
+              onClick={() => setActiveTab("staff")}
+            >
+              <div className="stat-icon-wrap blue">👥</div>
+              <div className="stat-info">
+                <span className="stat-number">{staffList.length}</span>
+                <span className="stat-label">Staff Members</span>
+              </div>
+            </div>
+          )}
+
+          {isAdmin && (
+            <div
               className={`dash-stat-card ${activeTab === "logs" ? "active" : ""}`}
               onClick={() => setActiveTab("logs")}
             >
@@ -166,6 +316,14 @@ export default function StaffDashboardClient({
             )}
             {isAdmin && (
               <button
+                className={`dash-tab-btn ${activeTab === "staff" ? "active" : ""}`}
+                onClick={() => setActiveTab("staff")}
+              >
+                ➕ Register Staff ({staffList.length})
+              </button>
+            )}
+            {isAdmin && (
+              <button
                 className={`dash-tab-btn ${activeTab === "logs" ? "active" : ""}`}
                 onClick={() => setActiveTab("logs")}
               >
@@ -192,12 +350,12 @@ export default function StaffDashboardClient({
 
         {/* 4. MAIN CONTENT PANELS */}
         <div className="dash-content-area">
-          {/* TAB 1: SEAFARER PROFILES */}
+          {/* TAB 1: SEAFARER PROFILES TABLE */}
           {activeTab === "profiles" && (
             <div className="dash-panel">
               <div className="panel-top-title">
                 <h2>Registered Seafarer Profiles & Resumes</h2>
-                <p>Candidate profiles submitted through Sea Hawk Seafarer Hub.</p>
+                <p>Candidate profiles submitted through Sea Hawk Seafarer Hub. Click any row to view full candidate detail & documents.</p>
               </div>
 
               {filteredProfiles.length === 0 ? (
@@ -207,89 +365,62 @@ export default function StaffDashboardClient({
                   <p>When seafarers register profiles via the Seafarer Hub, candidate records and uploaded resumes will appear here.</p>
                 </div>
               ) : (
-                <div className="records-cards-list">
-                  {filteredProfiles.map((r) => (
-                    <div className="record-card" key={r.id}>
-                      <div className="record-card-header">
-                        <div className="record-main-title">
-                          <h3>{String(r.fullName || r.name || "Seafarer Candidate")}</h3>
-                          <span className="record-date-badge">Submitted: {r.receivedAt?.slice(0, 10)}</span>
-                        </div>
-                        <span className="record-status-tag">{r.status || "Received"}</span>
-                      </div>
-
-                      <div className="record-grid-details">
-                        {r.rank && (
-                          <div className="detail-item">
-                            <span className="detail-label">RANK / TITLE</span>
-                            <span className="detail-val highlight">{String(r.rank)}</span>
-                          </div>
-                        )}
-                        {r.vesselType && (
-                          <div className="detail-item">
-                            <span className="detail-label">VESSEL TYPE</span>
-                            <span className="detail-val">{String(r.vesselType)}</span>
-                          </div>
-                        )}
-                        {r.experience && (
-                          <div className="detail-item">
-                            <span className="detail-label">SEA EXPERIENCE</span>
-                            <span className="detail-val">{String(r.experience)}</span>
-                          </div>
-                        )}
-                        {r.email && (
-                          <div className="detail-item">
-                            <span className="detail-label">EMAIL</span>
-                            <span className="detail-val">
-                              <a href={`mailto:${r.email}`}>{String(r.email)}</a>
-                            </span>
-                          </div>
-                        )}
-                        {r.phone && (
-                          <div className="detail-item">
-                            <span className="detail-label">PHONE</span>
-                            <span className="detail-val">
-                              <a href={`tel:${r.phone}`}>{String(r.phone)}</a>
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* File Attachments */}
-                      {r.files && Object.keys(r.files).length > 0 && (
-                        <div className="record-files-box">
-                          <span className="files-title">📎 Attached Documents / Resume:</span>
-                          <div className="files-flex">
-                            {Object.entries(r.files).map(([k, v]) => {
-                              const [stored, orig] = v.split("|");
-                              return (
-                                <a
-                                  key={k}
-                                  href={`/admin/file/${stored}/`}
-                                  className="file-download-btn"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  📄 {k}: {orig} ↓
-                                </a>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                <div className="audit-table-wrap">
+                  <table className="audit-table">
+                    <thead>
+                      <tr>
+                        <th>Candidate Name</th>
+                        <th>Rank / Title</th>
+                        <th>Vessel Type</th>
+                        <th>Sea Experience</th>
+                        <th>Email / Phone</th>
+                        <th>Date</th>
+                        <th style={{ textAlign: "right" }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredProfiles.map((r) => (
+                        <tr
+                          key={r.id}
+                          className="clickable-row"
+                          onClick={() =>
+                            setSelectedRecordModal({
+                              title: "👨‍✈️ Seafarer Candidate Profile Detail",
+                              type: "seafarer",
+                              data: r,
+                            })
+                          }
+                        >
+                          <td><strong>{String(r.fullName || r.name || "Seafarer Candidate")}</strong></td>
+                          <td><span className="event-badge green">{String(r.rank || "N/A")}</span></td>
+                          <td>{String(r.vesselType || "N/A")}</td>
+                          <td>{String(r.experience || "N/A")}</td>
+                          <td>{String(r.email || r.phone || "N/A")}</td>
+                          <td className="time-col">{r.receivedAt?.slice(0, 10) || "Recent"}</td>
+                          <td style={{ textAlign: "right" }}>
+                            <button
+                              type="button"
+                              className="file-download-btn"
+                              style={{ padding: "4px 10px", fontSize: "0.8rem" }}
+                            >
+                              👁️ View Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
           )}
 
-          {/* TAB 2: VESSEL ENQUIRIES */}
+          {/* TAB 2: VESSEL MANAGEMENT ENQUIRIES TABLE */}
           {activeTab === "enquiries" && isAdmin && (
             <div className="dash-panel">
               <div className="panel-top-title">
                 <h2>Vessel Management Enquiries</h2>
-                <p>Commercial, Technical, Crew & Marine Management requests from ship owners.</p>
+                <p>Commercial, Technical, Crew & Marine Management requests. Click any row to inspect complete enquiry info.</p>
               </div>
 
               {filteredEnquiries.length === 0 ? (
@@ -299,65 +430,62 @@ export default function StaffDashboardClient({
                   <p>Enquiries submitted by ship owners via the Ship Owners portal will appear here.</p>
                 </div>
               ) : (
-                <div className="records-cards-list">
-                  {filteredEnquiries.map((r) => (
-                    <div className="record-card" key={r.id}>
-                      <div className="record-card-header">
-                        <div className="record-main-title">
-                          <h3>{String(r.company || r.name || "Vessel Enquiry")}</h3>
-                          <span className="record-date-badge">Submitted: {r.receivedAt?.slice(0, 10)}</span>
-                        </div>
-                        <span className="record-status-tag gold">{r.enquiryType || "Management"}</span>
-                      </div>
-
-                      <div className="record-grid-details">
-                        {r.name && (
-                          <div className="detail-item">
-                            <span className="detail-label">CONTACT PERSON</span>
-                            <span className="detail-val">{String(r.name)}</span>
-                          </div>
-                        )}
-                        {r.vesselType && (
-                          <div className="detail-item">
-                            <span className="detail-label">VESSEL TYPE</span>
-                            <span className="detail-val">{String(r.vesselType)}</span>
-                          </div>
-                        )}
-                        {r.email && (
-                          <div className="detail-item">
-                            <span className="detail-label">BUSINESS EMAIL</span>
-                            <span className="detail-val">
-                              <a href={`mailto:${r.email}`}>{String(r.email)}</a>
-                            </span>
-                          </div>
-                        )}
-                        {r.phone && (
-                          <div className="detail-item">
-                            <span className="detail-label">PHONE</span>
-                            <span className="detail-val">{String(r.phone)}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {r.message && (
-                        <div className="record-message-box">
-                          <span className="message-label">Enquiry Message:</span>
-                          <p>{String(r.message)}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                <div className="audit-table-wrap">
+                  <table className="audit-table">
+                    <thead>
+                      <tr>
+                        <th>Company / Vessel</th>
+                        <th>Contact Person</th>
+                        <th>Vessel Type</th>
+                        <th>Enquiry Type</th>
+                        <th>Business Email</th>
+                        <th>Date</th>
+                        <th style={{ textAlign: "right" }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredEnquiries.map((r) => (
+                        <tr
+                          key={r.id}
+                          className="clickable-row"
+                          onClick={() =>
+                            setSelectedRecordModal({
+                              title: "🚢 Vessel Management Enquiry Detail",
+                              type: "enquiry",
+                              data: r,
+                            })
+                          }
+                        >
+                          <td><strong>{String(r.company || r.name || "Vessel Enquiry")}</strong></td>
+                          <td>{String(r.name || "N/A")}</td>
+                          <td>{String(r.vesselType || "N/A")}</td>
+                          <td><span className="event-badge green">{String(r.enquiryType || "Management")}</span></td>
+                          <td>{String(r.email || "N/A")}</td>
+                          <td className="time-col">{r.receivedAt?.slice(0, 10) || "Recent"}</td>
+                          <td style={{ textAlign: "right" }}>
+                            <button
+                              type="button"
+                              className="file-download-btn"
+                              style={{ padding: "4px 10px", fontSize: "0.8rem" }}
+                            >
+                              👁️ View Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
           )}
 
-          {/* TAB 3: CONTACT MESSAGES */}
+          {/* TAB 3: CONTACT MESSAGES TABLE */}
           {activeTab === "contacts" && isAdmin && (
             <div className="dash-panel">
               <div className="panel-top-title">
                 <h2>Direct Business Contacts</h2>
-                <p>Submissions from the main website Contact Us page.</p>
+                <p>Submissions from the website Contact Us page. Click any row to read complete message content.</p>
               </div>
 
               {filteredContacts.length === 0 ? (
@@ -367,59 +495,226 @@ export default function StaffDashboardClient({
                   <p>Inbound messages submitted through the Contact Us form will appear here.</p>
                 </div>
               ) : (
-                <div className="records-cards-list">
-                  {filteredContacts.map((r) => (
-                    <div className="record-card" key={r.id}>
-                      <div className="record-card-header">
-                        <div className="record-main-title">
-                          <h3>{String(r.name || r.company || "Contact Enquiry")}</h3>
-                          <span className="record-date-badge">{r.receivedAt?.slice(0, 10)}</span>
-                        </div>
-                        <span className="record-status-tag">{r.enquiryType || "General"}</span>
-                      </div>
-
-                      <div className="record-grid-details">
-                        {r.company && (
-                          <div className="detail-item">
-                            <span className="detail-label">COMPANY</span>
-                            <span className="detail-val">{String(r.company)}</span>
-                          </div>
-                        )}
-                        {r.email && (
-                          <div className="detail-item">
-                            <span className="detail-label">EMAIL</span>
-                            <span className="detail-val">
-                              <a href={`mailto:${r.email}`}>{String(r.email)}</a>
-                            </span>
-                          </div>
-                        )}
-                        {r.phone && (
-                          <div className="detail-item">
-                            <span className="detail-label">PHONE</span>
-                            <span className="detail-val">{String(r.phone)}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {r.message && (
-                        <div className="record-message-box">
-                          <span className="message-label">Message Content:</span>
-                          <p>{String(r.message)}</p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                <div className="audit-table-wrap">
+                  <table className="audit-table">
+                    <thead>
+                      <tr>
+                        <th>Sender Name</th>
+                        <th>Company</th>
+                        <th>Email Address</th>
+                        <th>Phone</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th style={{ textAlign: "right" }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredContacts.map((r) => (
+                        <tr
+                          key={r.id}
+                          className="clickable-row"
+                          onClick={() =>
+                            setSelectedRecordModal({
+                              title: "✉️ Business Contact Message Detail",
+                              type: "contact",
+                              data: r,
+                            })
+                          }
+                        >
+                          <td><strong>{String(r.name || "Sender")}</strong></td>
+                          <td>{String(r.company || "N/A")}</td>
+                          <td>{String(r.email || "N/A")}</td>
+                          <td>{String(r.phone || "N/A")}</td>
+                          <td><span className="event-badge green">{String(r.subject || r.enquiryType || "General")}</span></td>
+                          <td className="time-col">{r.receivedAt?.slice(0, 10) || "Recent"}</td>
+                          <td style={{ textAlign: "right" }}>
+                            <button
+                              type="button"
+                              className="file-download-btn"
+                              style={{ padding: "4px 10px", fontSize: "0.8rem" }}
+                            >
+                              👁️ View Details
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
           )}
 
-          {/* TAB 4: ACCESS AUDIT LOGS */}
+          {/* TAB 4: STAFF REGISTRATION & MANAGEMENT */}
+          {activeTab === "staff" && isAdmin && (
+            <div className="dash-panel">
+              <div className="panel-top-title">
+                <h2>➕ Register New Staff Member</h2>
+                <p>Only authorized administrators can create staff user accounts for Sea Hawk portal access.</p>
+              </div>
+
+              {regMessage && (
+                <div className={`split-alert ${regMessage.type === "error" ? "error" : "success"}`} style={{ marginBottom: "20px" }}>
+                  <span>{regMessage.type === "error" ? "⚠️" : "✅"}</span>
+                  <span>{regMessage.text}</span>
+                </div>
+              )}
+
+              <form className="split-signup-custom-grid" onSubmit={handleRegisterStaff} style={{ marginBottom: "40px" }}>
+                <div className="signup-2col-row">
+                  <div className="form-field">
+                    <label htmlFor="regName">Full Name <span className="req">*</span></label>
+                    <div className="input-group-box">
+                      <span className="prefix-icon">👤</span>
+                      <input
+                        id="regName"
+                        type="text"
+                        placeholder="e.g. Capt. Rajesh Sharma"
+                        value={regName}
+                        onChange={(e) => setRegName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="regEmail">Official Email <span className="req">*</span></label>
+                    <div className="input-group-box">
+                      <span className="prefix-icon">✉️</span>
+                      <input
+                        id="regEmail"
+                        type="email"
+                        placeholder="e.g. rajesh@seahawkgroup.co.in"
+                        value={regEmail}
+                        onChange={(e) => setRegEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="signup-2col-row">
+                  <div className="form-field">
+                    <label htmlFor="regPhone">Phone Number</label>
+                    <div className="input-group-box">
+                      <span className="prefix-icon">📞</span>
+                      <input
+                        id="regPhone"
+                        type="tel"
+                        placeholder="+91 99992 42808"
+                        value={regPhone}
+                        onChange={(e) => setRegPhone(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="regRole">Department / Role</label>
+                    <div className="input-group-box">
+                      <span className="prefix-icon">⚓</span>
+                      <select
+                        id="regRole"
+                        value={regRole}
+                        onChange={(e) => setRegRole(e.target.value)}
+                      >
+                        <option value="Manning & Crewing">Manning & Crewing</option>
+                        <option value="Technical Operations">Technical Operations</option>
+                        <option value="HR & Admin">HR & Admin</option>
+                        <option value="Commercial Ops">Commercial Ops</option>
+                        <option value="admin">Administrator</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" className="split-submit-btn line-full" disabled={regLoading}>
+                  <span>{regLoading ? "Creating Staff Account & Sending Email..." : "➕ Create Account & Email Login Credentials"}</span>
+                  <span className="btn-arrow">→</span>
+                </button>
+              </form>
+
+              <div className="panel-top-title">
+                <h3>Registered Staff Directory</h3>
+                <p>Active staff accounts stored in MongoDB database.</p>
+              </div>
+
+              {staffList.length === 0 ? (
+                <div className="empty-state">No staff accounts registered yet. Use the form above to add staff members.</div>
+              ) : (
+                <div className="audit-table-wrap">
+                  <table className="audit-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department / Role</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th style={{ textAlign: "right" }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {staffList.map((u, idx) => {
+                        const isInactive = String(u.status || "active").toLowerCase() === "inactive";
+                        return (
+                          <tr key={idx}>
+                            <td><strong>{String(u.name || "")}</strong></td>
+                            <td>{String(u.email || "")}</td>
+                            <td><span className="event-badge green">{String(u.role || "Staff")}</span></td>
+                            <td>{String(u.phone || "N/A")}</td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleStatus(u)}
+                                style={{
+                                  padding: "4px 10px",
+                                  borderRadius: "12px",
+                                  border: "none",
+                                  fontWeight: 700,
+                                  fontSize: "0.78rem",
+                                  cursor: "pointer",
+                                  background: isInactive ? "#fee2e2" : "#dcfce7",
+                                  color: isInactive ? "#991b1b" : "#166534",
+                                }}
+                                title="Click to toggle Active / Inactive"
+                              >
+                                {isInactive ? "🔴 Inactive" : "🟢 Active"}
+                              </button>
+                            </td>
+                            <td style={{ textAlign: "right" }}>
+                              <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingStaff({ ...u })}
+                                  style={{ padding: "5px 10px", background: "#f1f5f9", border: "1px solid #cbd5e1", borderRadius: "5px", fontSize: "0.82rem", fontWeight: 600, cursor: "pointer", color: "#0f172a" }}
+                                >
+                                  ✏️ Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteStaff(u)}
+                                  style={{ padding: "5px 10px", background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "5px", fontSize: "0.82rem", fontWeight: 600, cursor: "pointer", color: "#991b1b" }}
+                                >
+                                  🗑️ Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 5: ACCESS AUDIT LOGS */}
           {activeTab === "logs" && isAdmin && (
             <div className="dash-panel">
               <div className="panel-top-title">
                 <h2>Security & Access Audit Trail</h2>
-                <p>Every login attempt, view action, and document download is recorded for security compliance.</p>
+                <p>Every login attempt, view action, and document download is recorded for security compliance. Click any row to inspect audit log details.</p>
               </div>
 
               <div className="audit-table-wrap">
@@ -430,11 +725,22 @@ export default function StaffDashboardClient({
                       <th>Event</th>
                       <th>User</th>
                       <th>IP Address</th>
+                      <th style={{ textAlign: "right" }}>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {accessLogs.map((l, i) => (
-                      <tr key={i}>
+                      <tr
+                        key={i}
+                        className="clickable-row"
+                        onClick={() =>
+                          setSelectedRecordModal({
+                            title: "🛡️ Access Audit Log Detail",
+                            type: "log",
+                            data: l,
+                          })
+                        }
+                      >
                         <td className="time-col">{String(l.at || "")}</td>
                         <td>
                           <span className={`event-badge ${String(l.event).includes("failed") ? "red" : "green"}`}>
@@ -443,6 +749,15 @@ export default function StaffDashboardClient({
                         </td>
                         <td><strong>{String(l.user || "system")}</strong></td>
                         <td className="ip-col">{String(l.ip || "127.0.0.1")}</td>
+                        <td style={{ textAlign: "right" }}>
+                          <button
+                            type="button"
+                            className="file-download-btn"
+                            style={{ padding: "4px 10px", fontSize: "0.8rem" }}
+                          >
+                            👁️ View Details
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -452,6 +767,172 @@ export default function StaffDashboardClient({
           )}
         </div>
       </div>
+
+      {/* ================= TOP-RIGHT FLOATING TOAST NOTIFICATION ================= */}
+      {toast && (
+        <div className={`top-right-toast-box ${toast.type}`}>
+          <div style={{ fontSize: "1.4rem" }}>{toast.type === "error" ? "⚠️" : "✅"}</div>
+          <div>
+            <h4 style={{ margin: "0 0 2px", fontSize: "0.95rem", color: "#0f172a", fontWeight: 700 }}>{toast.title}</h4>
+            <p style={{ margin: 0, fontSize: "0.85rem", color: "#475569" }}>{toast.message}</p>
+          </div>
+          <button type="button" className="toast-close-btn" onClick={() => setToast(null)}>
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* ================= CLICKABLE TABLE ROW RECORD DETAIL VIEW MODAL ================= */}
+      {selectedRecordModal && (
+        <div className="quick-contact-modal-backdrop">
+          <div className="quick-contact-modal-box" style={{ maxWidth: "560px" }}>
+            <button type="button" className="quick-contact-modal-close" onClick={() => setSelectedRecordModal(null)}>
+              ✕
+            </button>
+
+            <div style={{ marginBottom: "16px" }}>
+              <span className="quick-contact-modal-badge">DATA INSPECTOR</span>
+              <h3 style={{ color: "#0b2233", fontSize: "1.35rem", fontWeight: 800, margin: "4px 0 0" }}>
+                {selectedRecordModal.title}
+              </h3>
+            </div>
+
+            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", padding: "16px", marginBottom: "20px", maxHeight: "380px", overflowY: "auto" }}>
+              {Object.entries(selectedRecordModal.data).map(([key, value]) => {
+                if (!value || key === "_id" || key === "id") return null;
+
+                if (key === "files" && typeof value === "object" && value !== null) {
+                  return (
+                    <div key={key} style={{ marginBottom: "12px", borderBottom: "1px solid #f1f5f9", paddingBottom: "10px" }}>
+                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>ATTACHED DOCUMENTS / RESUME</span>
+                      <div style={{ marginTop: "6px", display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                        {Object.entries(value as Record<string, string>).map(([docKey, docVal]) => {
+                          const [stored, orig] = docVal.split("|");
+                          return (
+                            <a
+                              key={docKey}
+                              href={`/admin/file/${stored}/`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="file-download-btn"
+                              style={{ fontSize: "0.8rem", padding: "6px 12px" }}
+                            >
+                              📄 {docKey}: {orig} ↓
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={key} style={{ marginBottom: "10px", borderBottom: "1px dashed #e2e8f0", paddingBottom: "8px" }}>
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
+                      {key.replace(/([A-Z])/g, " $1").toUpperCase()}
+                    </span>
+                    <p style={{ margin: "2px 0 0", color: "#0f172a", fontWeight: 600, fontSize: "0.92rem", wordBreak: "break-word" }}>
+                      {String(value)}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button type="button" className="split-submit-btn line-full" onClick={() => setSelectedRecordModal(null)}>
+              <span>Close Detail View</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ================= EDIT STAFF MEMBER MODAL DIALOG ================= */}
+      {editingStaff && (
+        <div className="quick-contact-modal-backdrop">
+          <div className="quick-contact-modal-box" style={{ maxWidth: "480px" }}>
+            <button type="button" className="quick-contact-modal-close" onClick={() => setEditingStaff(null)}>
+              ✕
+            </button>
+
+            <h3 style={{ color: "#0b2233", fontSize: "1.3rem", fontWeight: 800, margin: "0 0 16px" }}>
+              ✏️ Edit Staff Details
+            </h3>
+
+            <form onSubmit={handleSaveEdit}>
+              <div className="form-field" style={{ marginBottom: "14px" }}>
+                <label>Full Name <span className="req">*</span></label>
+                <div className="input-group-box">
+                  <span className="prefix-icon">👤</span>
+                  <input
+                    type="text"
+                    value={String(editingStaff.name || "")}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, name: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-field" style={{ marginBottom: "14px" }}>
+                <label>Official Email <span className="req">*</span></label>
+                <div className="input-group-box">
+                  <span className="prefix-icon">✉️</span>
+                  <input
+                    type="email"
+                    value={String(editingStaff.email || "")}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, email: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-field" style={{ marginBottom: "14px" }}>
+                <label>Phone Number</label>
+                <div className="input-group-box">
+                  <span className="prefix-icon">📞</span>
+                  <input
+                    type="tel"
+                    value={String(editingStaff.phone || "")}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-field" style={{ marginBottom: "20px" }}>
+                <label>Department / Role</label>
+                <div className="input-group-box">
+                  <span className="prefix-icon">⚓</span>
+                  <select
+                    value={String(editingStaff.role || "Manning & Crewing")}
+                    onChange={(e) => setEditingStaff({ ...editingStaff, role: e.target.value })}
+                  >
+                    <option value="Manning & Crewing">Manning & Crewing</option>
+                    <option value="Technical Operations">Technical Operations</option>
+                    <option value="HR & Admin">HR & Admin</option>
+                    <option value="Commercial Ops">Commercial Ops</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingStaff(null)}
+                  style={{ padding: "12px 16px", background: "#e2e8f0", color: "#334155", border: "none", borderRadius: "6px", fontWeight: 600, cursor: "pointer" }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="split-submit-btn line-full" disabled={editLoading}>
+                  <span>{editLoading ? "Saving Changes..." : "Save Updates"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+
+

@@ -120,7 +120,7 @@ export default function Home() {
             <Link href="/ship-owners/" className="gateway-card owners">
               <div
                 className="gateway-card-bg"
-                style={{ backgroundImage: `url(/images/hero-ship-1.jpg)` }}
+                style={{ backgroundImage: `url(/images/hero-ship-1.webp)` }}
               />
               <div className="gateway-card-overlay" />
               <div className="gateway-card-content">
@@ -162,7 +162,7 @@ export default function Home() {
             <Link href="/seafarers/" className="gateway-card seafarers">
               <div
                 className="gateway-card-bg"
-                style={{ backgroundImage: `url(/images/hero-ship-3.jpg)` }}
+                style={{ backgroundImage: `url(/images/hero-ship-3.webp)` }}
               />
               <div className="gateway-card-overlay" />
               <div className="gateway-card-content">
@@ -271,7 +271,7 @@ export default function Home() {
           <div className="cta-banner-card">
             <div
               className="cta-banner-bg"
-              style={{ backgroundImage: `url(/images/cta-banner-bg.jpg)` }}
+              style={{ backgroundImage: `url(/images/cta-banner-bg.webp)` }}
             />
             <div className="cta-banner-overlay" />
             <div className="cta-banner-text">
@@ -344,7 +344,7 @@ export default function Home() {
       <section className="why-contact-section">
         <div
           className="why-bg-overlay"
-          style={{ backgroundImage: `url(/images/hero-ship-1.jpg)` }}
+          style={{ backgroundImage: `url(/images/hero-ship-1.webp)` }}
         />
         <div className="why-dark-tint" />
         <div className="wrap why-contact-wrap">

@@ -9,7 +9,7 @@ interface SubpageHeroProps {
 
 export default function SubpageHero({
   title,
-  bgImage = "/images/hero-ship-1.jpg",
+  bgImage = "/images/hero-ship-1.webp",
   crumbs = [],
 }: SubpageHeroProps) {
   return (

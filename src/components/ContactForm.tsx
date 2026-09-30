@@ -114,7 +114,7 @@ export default function ContactForm() {
       <div className="card-ship-banner">
         <div
           className="card-ship-bg"
-          style={{ backgroundImage: "url('/images/hero-ship-2.jpg')" }}
+          style={{ backgroundImage: "url('/images/hero-ship-2.webp')" }}
         />
         <div className="card-ship-overlay" />
         <div className="card-ship-header-content">

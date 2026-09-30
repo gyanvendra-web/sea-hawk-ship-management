@@ -34,7 +34,7 @@ export default function Contact() {
     <>
       <SubpageHero
         title="Contact Us"
-        bgImage="/images/hero-ship-2.jpg"
+        bgImage="/images/hero-ship-2.webp"
         crumbs={[{ name: "Contact", href: "/contact/" }]}
       />
 

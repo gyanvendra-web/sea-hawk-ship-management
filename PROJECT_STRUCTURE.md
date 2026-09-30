@@ -59,6 +59,25 @@ src/
 
 ---
 
+## ⚡ PERFORMANCE & ASSETS (Image Optimization & Caching)
+All static visual media, modern WebP image assets, and caching configurations:
+
+```text
+public/
+└── images/                        ⚡ HIGH-PERFORMANCE WEBP ASSETS (Compressed ~80-150KB)
+    ├── hero-ship-1.webp           -> LCP Hero Image (Preloaded in Root Head)
+    ├── hero-ship-2.webp           -> Portal & Contact Hero Media
+    ├── hero-ship-3.webp           -> Seafarer Hub Media
+    ├── hero-ship-4.webp           -> Offshore Services Media
+    ├── service-commercial.webp    -> Commercial Management Card
+    ├── service-technical.webp     -> Technical Management Card
+    ├── service-crew.webp          -> Crew Management Card
+    ├── service-consultancy.webp   -> Marine Consultancy Card
+    └── cta-banner-bg.webp         -> CTA Section Background Banner
+```
+
+---
+
 ## 🛠️ Summary Cheat Sheet for Developers
 
 | Task | Where to look? | Path |
@@ -66,6 +85,8 @@ src/
 | **Change Page UI / Design** | 🎨 Frontend | `src/app/` or `src/components/` |
 | **Edit CSS / Colors / Spacing** | 🎨 Frontend | `src/app/globals.css` |
 | **Add / Change Form Fields** | 🎨 Frontend | `src/components/ContactForm.tsx` or `HomeQuickForm.tsx` |
+| **Optimize Image Assets / Format** | ⚡ Performance | `public/images/` & `src/lib/images.ts` |
+| **Configure Cache & Next.js** | ⚙️ Backend / Config | `next.config.ts` |
 | **MongoDB Schemas / Fields** | ⚙️ Backend | `src/lib/models/` |
 | **API Endpoints / Server Logic** | ⚙️ Backend | `src/app/api/` |
 | **Database URI / Credentials** | ⚙️ Backend | `.env.local` (`MONGODB_URI`) |

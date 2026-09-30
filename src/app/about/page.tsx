@@ -122,7 +122,7 @@ export default function About() {
     <>
       <SubpageHero
         title="About Us"
-        bgImage="/images/hero-ship-1.jpg"
+        bgImage="/images/hero-ship-1.webp"
         crumbs={[{ name: "About Us", href: "/about/" }]}
       />
 
@@ -153,7 +153,7 @@ export default function About() {
             <div className="about-overview-image-wrap">
               <div
                 className="about-image-card"
-                style={{ backgroundImage: `url(/images/hero-ship-1.jpg)` }}
+                style={{ backgroundImage: `url(/images/hero-ship-1.webp)` }}
               />
             </div>
           </div>

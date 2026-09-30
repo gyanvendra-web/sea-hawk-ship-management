@@ -63,9 +63,26 @@ export async function POST(req: Request) {
           $or: [{ email: user.toLowerCase() }, { name: user }],
         });
         if (staff) {
-          ok = true;
-          loggedUser = staff.name || staff.email;
-          userRole = (staff.role === "admin" ? "admin" : "recruiter") as any;
+          if (staff.status === "inactive") {
+            return back("inactive");
+          }
+          if (staff.passwordHash && pw) {
+            const [, salt, hex] = staff.passwordHash.split(":");
+            if (salt && hex) {
+              const a = scryptSync(pw, salt, 64);
+              const b = Buffer.from(hex, "hex");
+              if (a.length === b.length && timingSafeEqual(a, b)) {
+                ok = true;
+                loggedUser = staff.name || staff.email;
+                userRole = (staff.role === "admin" ? "admin" : "recruiter") as any;
+              }
+            }
+          } else {
+            // Fallback for legacy staff records without password hash
+            ok = true;
+            loggedUser = staff.name || staff.email;
+            userRole = (staff.role === "admin" ? "admin" : "recruiter") as any;
+          }
         }
       }
     } catch (dbErr) {

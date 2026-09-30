@@ -14,7 +14,7 @@ export default function MediaVideoCard() {
       {/* Background Image */}
       <div
         className="video-poster-bg"
-        style={{ backgroundImage: `url(/images/hero-ship-2.jpg)` }}
+        style={{ backgroundImage: `url(/images/hero-ship-2.webp)` }}
       />
       {/* Dark Gradient Overlay */}
       <div className="video-overlay" />

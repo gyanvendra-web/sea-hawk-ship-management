@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verify, COOKIE } from "@/lib/auth";
 import { readAll, append } from "@/lib/store";
+import { dbConnect } from "@/lib/mongodb";
+import { StaffUser } from "@/lib/models/StaffUser";
 import StaffDashboardClient from "@/components/StaffDashboardClient";
 
 type R = Record<string, unknown> & {
@@ -27,6 +29,19 @@ export default async function Admin() {
   const contacts = isAdmin ? await readAll<R>("contacts") : [];
   const accessLogs = isAdmin ? await readAll<Record<string, unknown>>("access") : [];
 
+  let staffUsers: Record<string, unknown>[] = [];
+  if (isAdmin) {
+    try {
+      const db = await dbConnect();
+      if (db) {
+        const users = await StaffUser.find({}).sort({ createdAt: -1 }).lean();
+        staffUsers = JSON.parse(JSON.stringify(users));
+      }
+    } catch (err) {
+      console.warn("⚠️ Failed to load staff users:", err);
+    }
+  }
+
   return (
     <StaffDashboardClient
       session={{ u: s.u, r: s.r }}
@@ -34,7 +49,9 @@ export default async function Admin() {
       enquiries={enquiries}
       contacts={contacts}
       accessLogs={accessLogs}
+      staffUsers={staffUsers}
     />
   );
 }
+
 

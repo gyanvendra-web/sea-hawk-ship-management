@@ -16,7 +16,7 @@ export type Slide = {
 const slides: Slide[] = [
   {
     id: 1,
-    image: "/images/hero-ship-1.jpg",
+    image: "/images/hero-ship-1.webp",
     tagline: "INTEGRATED SHIP MANAGEMENT",
     title: "Safer, Smarter Maritime Operations",
     description:
@@ -26,7 +26,7 @@ const slides: Slide[] = [
   },
   {
     id: 2,
-    image: "/images/hero-ship-2.jpg",
+    image: "/images/hero-ship-2.webp",
     tagline: "COMMERCIAL & FLEET MANAGEMENT",
     title: "Commercial Excellence & Voyage Performance",
     description:
@@ -36,7 +36,7 @@ const slides: Slide[] = [
   },
   {
     id: 3,
-    image: "/images/hero-ship-3.jpg",
+    image: "/images/hero-ship-3.webp",
     tagline: "TECHNICAL MANAGEMENT & SAFETY",
     title: "Optimizing Vessel Reliability & Asset Life",
     description:
@@ -46,7 +46,7 @@ const slides: Slide[] = [
   },
   {
     id: 4,
-    image: "/images/hero-ship-4.jpg",
+    image: "/images/hero-ship-4.webp",
     tagline: "OFFSHORE & CREW MANAGEMENT",
     title: "Specialized Marine & Manpower Support",
     description:

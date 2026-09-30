@@ -1175,7 +1175,7 @@ ul.dropdown-menu li.dropdown-item a:hover {
 .cta-banner-bg {
   position: absolute;
   inset: 0;
-  background-image: url('/images/cta-banner-bg.jpg');
+  background-image: url('/images/cta-banner-bg.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -3495,11 +3495,11 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
    ========================================== */
 .split-portal-page {
   position: relative;
-  min-height: 90vh;
+  min-height: calc(100vh - 160px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 1.5rem 1.5rem 2.5rem;
   background: #f8fafc;
 }
 
@@ -3507,11 +3507,11 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: 100%;
-  max-width: 1040px;
-  min-height: 480px;
+  max-width: 980px;
+  min-height: 420px;
   background: #ffffff;
   border: 1.5px solid #d49b18;
-  box-shadow: 0 20px 70px rgba(11, 34, 51, 0.22);
+  box-shadow: 0 15px 50px rgba(11, 34, 51, 0.18);
   border-radius: 0 !important;
   overflow: hidden;
   align-items: stretch;
@@ -3529,7 +3529,7 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 2.5rem 2rem;
+  padding: 2rem 1.75rem;
   background: #0b2233;
   color: #ffffff;
   overflow: hidden;
@@ -3568,12 +3568,12 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
 }
 
 .visual-header-block {
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .visual-badge {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
 }
 
 .visual-badge span {
@@ -3589,16 +3589,16 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
 }
 
 .visual-title {
-  font-size: 1.95rem;
+  font-size: 1.8rem;
   font-weight: 800 !important;
   color: #ffffff !important;
   line-height: 1.25;
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.5rem;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85) !important;
 }
 
 .visual-tagline {
-  font-size: 0.9rem !important;
+  font-size: 0.88rem !important;
   font-weight: 500 !important;
   color: #cbd5e1 !important;
   margin: 0;
@@ -3614,7 +3614,7 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
   align-items: center;
   gap: 0.5rem;
   letter-spacing: 0.05em;
-  padding-top: 1.25rem;
+  padding-top: 1rem;
   border-top: 1px dashed rgba(203, 213, 225, 0.3);
 }
 
@@ -3630,11 +3630,11 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
 .split-form-panel {
   position: relative;
   background: #ffffff;
-  padding: 2.25rem 2.25rem 1.75rem;
+  padding: 1.75rem 2rem 1.25rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 480px;
+  min-height: 420px;
 }
 
 .form-panel-top-gold {
@@ -4533,5 +4533,125 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
   color: #0b2233;
   box-shadow: 0 8px 25px rgba(212, 155, 24, 0.35);
 }
+
+/* ==========================================
+   FULL-SCREEN CENTERED MODAL DIALOG OVERLAY
+   ========================================== */
+.quick-contact-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(11, 34, 51, 0.75) !important;
+  backdrop-filter: blur(5px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1.5rem !important;
+  overflow-y: auto !important;
+  animation: fadeInModalOverlay 0.2s ease-out forwards;
+}
+
+@keyframes fadeInModalOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.quick-contact-modal-box {
+  position: relative !important;
+  background: #ffffff !important;
+  width: 100% !important;
+  max-width: 480px !important;
+  padding: 2.25rem !important;
+  border-radius: 12px !important;
+  border: 1.5px solid #d49b18 !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4) !important;
+  animation: slideUpModalBox 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpModalBox {
+  from { transform: translateY(24px) scale(0.96); }
+  to { transform: translateY(0) scale(1); }
+}
+
+.quick-contact-modal-close {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  font-size: 1.1rem !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.quick-contact-modal-close:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* ==========================================
+   TOP-RIGHT FLOATING TOAST NOTIFICATION
+   ========================================== */
+.top-right-toast-box {
+  position: fixed !important;
+  top: 24px !important;
+  right: 24px !important;
+  z-index: 9999999 !important;
+  max-width: 420px !important;
+  background: #ffffff !important;
+  border-left: 5px solid #10b981 !important;
+  border-top: 1px solid #e2e8f0 !important;
+  border-right: 1px solid #e2e8f0 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22) !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInToast {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.top-right-toast-box.error {
+  border-left-color: #ef4444 !important;
+}
+
+.toast-close-btn {
+  background: none !important;
+  border: none !important;
+  color: #94a3b8 !important;
+  font-size: 1.1rem !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin-left: auto !important;
+}
+
+.toast-close-btn:hover {
+  color: #334155 !important;
+}
+
+/* Clickable Table Rows */
+.clickable-row {
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.clickable-row:hover {
+  background-color: #f1f5f9 !important;
+}
+
+
 
 
