@@ -127,24 +127,61 @@ export function ConsentBanner() {
 }
 
 export function CookieSettings() {
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    setStatus(getConsent() ?? null);
+  }, []);
+
+  const handleReset = () => {
+    document.cookie = "sh_consent=; max-age=0; path=/";
+    setStatus(null);
+    location.reload();
+  };
+
   return (
-    <button
-      className="btn ghost"
+    <div
       style={{
-        color: "#ffffff",
-        borderColor: "rgba(255,255,255,0.5)",
-        padding: "0.4rem 0.9rem",
-        minHeight: 44,
-        background: "transparent",
-        borderRadius: "4px",
-        cursor: "pointer",
-      }}
-      onClick={() => {
-        document.cookie = "sh_consent=; max-age=0; path=/";
-        location.reload();
+        background: "#f8fafc",
+        border: "2px solid #d49b18",
+        borderRadius: "8px",
+        padding: "1.25rem 1.5rem",
+        margin: "1.75rem 0",
+        boxShadow: "0 4px 14px rgba(0,0,0,0.04)",
       }}
     >
-      Cookie settings
-    </button>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+        <div>
+          <h4 style={{ margin: "0 0 6px", color: "#0b2233", fontSize: "1.08rem", fontWeight: 800 }}>
+            ⚙️ Interactive Cookie Preference Control
+          </h4>
+          <p style={{ margin: 0, color: "#475569", fontSize: "0.9rem" }}>
+            Current Saved Consent Status:{" "}
+            <strong style={{ color: status === "accepted" ? "#166534" : status === "rejected" ? "#991b1b" : "#b98a1c" }}>
+              {status === "accepted" ? "🟢 Accepted All Cookies" : status === "rejected" ? "🔴 Rejected Optional Analytics" : "🟡 Default (Not Set Yet)"}
+            </strong>
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleReset}
+          style={{
+            background: "#0b2233",
+            color: "#ffffff",
+            border: "1.5px solid #d49b18",
+            padding: "10px 20px",
+            borderRadius: "6px",
+            fontWeight: 700,
+            fontSize: "0.88rem",
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          🔄 Re-open Cookie Banner &amp; Change Choices
+        </button>
+      </div>
+    </div>
   );
 }

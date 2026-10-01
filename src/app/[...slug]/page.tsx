@@ -8,6 +8,7 @@ import { type Crumb } from "@/components/Breadcrumbs";
 import GenericForm from "@/components/GenericForm";
 import Pic from "@/components/Pic";
 import SubpageHero from "@/components/SubpageHero";
+import { CookieSettings } from "@/components/Consent";
 import { pageImage } from "@/lib/images";
 
 const p = (slug: string[]) => `/${slug.join("/")}/`;
@@ -232,6 +233,9 @@ export default async function Page({
                   <Block key={i} b={b} />
                 ))}
               </div>
+
+              {/* Interactive Cookie Settings Control for Cookie Policy Page */}
+              {pg.path === "/cookie-policy/" && <CookieSettings />}
 
               {/* Form Component (If Enquiry or Profile Page) */}
               {(pg.form === "enquiry" || pg.form === "profile") && (
