@@ -70,14 +70,12 @@ export async function readAll<T = Record<string, unknown>>(kind: string): Promis
     const db = await dbConnect();
     if (db) {
       const docs = await Submission.find({ kind }).sort({ createdAt: -1 }).lean();
-      if (docs && docs.length > 0) {
-        return docs.map((d) => ({
-          ...(d.data as Record<string, unknown>),
-          id: d.id,
-          status: d.status,
-          receivedAt: d.receivedAt ? new Date(d.receivedAt).toISOString() : new Date().toISOString(),
-        })) as T[];
-      }
+      return (docs || []).map((d) => ({
+        ...(d.data as Record<string, unknown>),
+        id: d.id,
+        status: d.status,
+        receivedAt: d.receivedAt ? new Date(d.receivedAt).toISOString() : new Date().toISOString(),
+      })) as T[];
     }
   } catch (err) {
     console.warn(`⚠️ MongoDB readAll warning for ${kind}:`, (err as Error).message);

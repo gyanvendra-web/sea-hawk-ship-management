@@ -23,34 +23,35 @@ if (!global.mongooseCache) {
 }
 
 export async function dbConnect(): Promise<typeof mongoose | null> {
-  if (cached.conn && cached.conn.connection.readyState === 1) {
-    return cached.conn;
+  const uri = process.env.MONGODB_URI?.trim();
+
+  if (!uri) {
+    console.warn("⚠️ MONGODB_URI environment variable is not defined");
+    return null;
   }
 
-  // If connection failed within last 10 seconds, fallback immediately without blocking for 1.5s
-  if (cached.lastErrTime && Date.now() - cached.lastErrTime < 10000) {
-    return null;
+  if (cached.conn && cached.conn.connection.readyState === 1) {
+    return cached.conn;
   }
 
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 1500,
-      connectTimeoutMS: 1500,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
     };
 
     cached.promise = mongoose
-      .connect(MONGODB_URI, opts)
+      .connect(uri, opts)
       .then((m) => {
         console.log("✅ MongoDB Connected Successfully");
         cached.conn = m;
         return m;
       })
       .catch((err) => {
-        console.warn("⚠️ MongoDB Connection Warning (Falling back to local storage):", err.message);
+        console.error("❌ MongoDB Connection Error:", err.message);
         cached.conn = null;
         cached.promise = null;
-        cached.lastErrTime = Date.now();
         return null;
       });
   }
@@ -63,7 +64,6 @@ export async function dbConnect(): Promise<typeof mongoose | null> {
     return conn;
   } catch (e) {
     cached.promise = null;
-    cached.lastErrTime = Date.now();
     return null;
   }
 }
