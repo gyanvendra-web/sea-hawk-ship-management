@@ -66,6 +66,7 @@ export default function Footer() {
               <li><Link href="/about/leadership/">Leadership Team</Link></li>
               <li><Link href="/about/quality-safety-compliance/">Quality &amp; Safety</Link></li>
               <li><Link href="/recruitment-fraud-advisory/">Fraud Advisory</Link></li>
+              <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer">HTML / XML Sitemap</a></li>
               <li><Link href="/admin/login/">Staff Portal</Link></li>
             </ul>
           </div>
@@ -90,8 +91,10 @@ export default function Footer() {
           <ul className="footer-legal-links">
             <li><Link href="/privacy-policy/">Privacy Policy</Link></li>
             <li><Link href="/terms/">Terms of Use</Link></li>
+            <li><Link href="/cookie-policy/">Cookie Policy</Link></li>
             <li><Link href="/disclaimer/">Disclaimer</Link></li>
             <li><Link href="/accessibility/">Accessibility</Link></li>
+            <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer">Sitemap</a></li>
           </ul>
           <p className="footer-copyright">
             © {new Date().getFullYear()} {site.legalName}. All rights reserved.
