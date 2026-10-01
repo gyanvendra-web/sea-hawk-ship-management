@@ -1788,8 +1788,8 @@ ol.steps li::before {
 .subpage-hero-banner {
   position: relative;
   width: 100%;
-  height: 280px;
-  min-height: 240px;
+  height: 270px;
+  min-height: 230px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1938,7 +1938,8 @@ ol.steps li::before {
   flex-direction: column;
   gap: 2rem;
   position: sticky;
-  top: 2rem;
+  top: 6.5rem;
+  align-self: start;
 }
 
 .sidebar-widget {
@@ -2038,6 +2039,69 @@ ol.steps li::before {
 .sidebar-nav-links a:hover {
   color: #d49b18;
   padding-left: 4px;
+}
+
+/* Sidebar Feature Highlights & Fraud Notice Widgets */
+.sidebar-highlights-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-highlights-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.88rem;
+  color: #334155;
+  line-height: 1.45;
+  border-bottom: 1px dashed #f1f5f9;
+  padding-bottom: 0.6rem;
+}
+
+.sidebar-highlights-list li:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.sidebar-highlights-icon {
+  color: #d49b18;
+  font-weight: 800;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 0.1rem;
+}
+
+.sidebar-widget.fraud-widget {
+  background: #fffbeb;
+  border-top-color: #d49b18 !important;
+  border-color: #fef3c7;
+}
+
+.sidebar-widget.fraud-widget h3 {
+  color: #92400e;
+}
+
+.sidebar-widget.fraud-widget p {
+  font-size: 0.88rem;
+  color: #78350f;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.sidebar-fraud-link {
+  color: #0b2233;
+  font-weight: 700;
+  font-size: 0.86rem;
+  text-decoration: underline;
+  display: inline-block;
+}
+
+.sidebar-fraud-link:hover {
+  color: #d49b18;
 }
 
 .subpage-hero-title {
@@ -2951,8 +3015,8 @@ html, body {
 .subpage-hero-banner {
   position: relative;
   width: 100%;
-  height: 220px;
-  min-height: 190px;
+  height: 270px;
+  min-height: 230px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -4896,8 +4960,8 @@ html, body {
 
   /* Subpage Hero */
   .subpage-hero-banner {
-    height: 180px !important;
-    min-height: 160px !important;
+    height: 210px !important;
+    min-height: 180px !important;
   }
   .subpage-hero-title {
     font-size: clamp(1.6rem, 5vw, 2.2rem) !important;

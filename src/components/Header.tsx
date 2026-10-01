@@ -8,10 +8,12 @@ import { nav, site } from "@/lib/site";
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState("Monday 28th September 2026");
+  const [mounted, setMounted] = useState(false);
+  const [currentDate, setCurrentDate] = useState("Thursday, October 1, 2026");
   const pathname = usePathname();
 
   useEffect(() => {
+    setMounted(true);
     const d = new Date();
     const formatted = d.toLocaleDateString("en-US", {
       weekday: "long",
@@ -28,7 +30,7 @@ export default function Header() {
       <div className="top-utility-bar">
         <div className="wrap utility-wrap">
           <div className="utility-date" suppressHydrationWarning>
-            {currentDate}
+            {mounted ? currentDate : "Thursday, October 1, 2026"}
           </div>
           <div className="utility-right">
             <Link href="/admin/login/" className="utility-staff-btn">

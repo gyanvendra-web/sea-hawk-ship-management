@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import styles from "./StaffDashboard.module.css";
 
 type R = Record<string, unknown> & {
   id: string;
@@ -37,9 +38,57 @@ export default function StaffDashboardClient({
   accessLogs: Record<string, unknown>[];
   staffUsers?: Record<string, unknown>[];
 }) {
-  const [activeTab, setActiveTab] = useState<"profiles" | "enquiries" | "contacts" | "logs" | "staff">("profiles");
+  const [activeTab, setActiveTab] = useState<"profiles" | "enquiries" | "contacts" | "logs" | "staff-register" | "staff-list">("profiles");
+  const [staffMenuOpen, setStaffMenuOpen] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  // Table Data Pagination State (10 items per page)
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchTerm]);
+
+  const renderPaginationControls = (totalItems: number) => {
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE) || 1;
+    if (totalItems <= ITEMS_PER_PAGE) return null;
+
+    const startRecord = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+    const endRecord = Math.min(currentPage * ITEMS_PER_PAGE, totalItems);
+
+    return (
+      <div className={styles.tablePaginationBar}>
+        <div className={styles.paginationInfo}>
+          Showing <strong>{startRecord}</strong>–<strong>{endRecord}</strong> of <strong>{totalItems}</strong> entries
+        </div>
+        <div className={styles.paginationButtons}>
+          <button
+            type="button"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            className={styles.paginationBtn}
+          >
+            ← Previous
+          </button>
+
+          <span className={styles.paginationPageIndicator}>
+            Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+          </span>
+
+          <button
+            type="button"
+            disabled={currentPage >= totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            className={styles.paginationBtn}
+          >
+            Next →
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   // Staff Registration Form State
   const [regName, setRegName] = useState("");
@@ -88,6 +137,7 @@ export default function StaffDashboardClient({
         setRegName("");
         setRegEmail("");
         setRegPhone("");
+        setActiveTab("staff-list");
       } else {
         setRegMessage({ type: "error", text: data.error || "Failed to create staff account." });
         triggerToast("⚠️ Registration Failed", data.error || "Could not register staff.", "error");
@@ -197,146 +247,133 @@ export default function StaffDashboardClient({
   });
 
   return (
-    <div className="staff-dashboard-wrap">
-      {/* 1. TOP EXECUTIVE HEADER BAR */}
-      <header className="dash-top-bar">
-        <div className="wrap dash-top-flex">
-          <div className="dash-user-info">
-            <span className="dash-avatar-badge">⚓</span>
+    <div className={styles.sidebarLayout}>
+      {/* 1. LEFT EXECUTIVE SIDEBAR NAVIGATION */}
+      <aside className={styles.dashSidebar}>
+        <div className={styles.dashSidebarTop}>
+          {/* Brand Logo & Header Box */}
+          <div className={styles.sidebarBrandBox}>
+            <span className="dash-avatar-badge" style={{ width: "38px", height: "38px", fontSize: "1.2rem" }}>⚓</span>
             <div>
-              <span className="dash-role-tag">{session.r.toUpperCase()} PORTAL</span>
-              <h1 className="dash-user-name">Welcome, {session.u}</h1>
+              <span className={styles.sidebarBrandTitle}>ADMIN CONTROL</span>
+              <h2 className={styles.sidebarBrandName}>Sea Hawk Portal</h2>
             </div>
           </div>
 
-          <div className="dash-top-actions">
-            <div className="dash-system-status">
-              <span className="status-dot-pulse" /> 24/7 Security Protocol Active
-            </div>
-            <form method="post" action="/api/admin/logout">
-              <button type="submit" className="dash-logout-btn">
-                🚪 Sign Out
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
-      <div className="wrap dash-body-container">
-        {/* 2. STATS ANALYTICS BANNER */}
-        <div className="dash-stats-grid">
-          <div
-            className={`dash-stat-card ${activeTab === "profiles" ? "active" : ""}`}
-            onClick={() => setActiveTab("profiles")}
-          >
-            <div className="stat-icon-wrap gold">👨‍✈️</div>
-            <div className="stat-info">
-              <span className="stat-number">{profiles.length}</span>
-              <span className="stat-label">Seafarer Candidates</span>
-            </div>
-          </div>
-
-          {isAdmin && (
-            <div
-              className={`dash-stat-card ${activeTab === "enquiries" ? "active" : ""}`}
-              onClick={() => setActiveTab("enquiries")}
-            >
-              <div className="stat-icon-wrap navy">🚢</div>
-              <div className="stat-info">
-                <span className="stat-number">{enquiries.length}</span>
-                <span className="stat-label">Vessel Enquiries</span>
-              </div>
-            </div>
-          )}
-
-          {isAdmin && (
-            <div
-              className={`dash-stat-card ${activeTab === "contacts" ? "active" : ""}`}
-              onClick={() => setActiveTab("contacts")}
-            >
-              <div className="stat-icon-wrap teal">✉️</div>
-              <div className="stat-info">
-                <span className="stat-number">{contacts.length}</span>
-                <span className="stat-label">Contact Messages</span>
-              </div>
-            </div>
-          )}
-
-          {isAdmin && (
-            <div
-              className={`dash-stat-card ${activeTab === "staff" ? "active" : ""}`}
-              onClick={() => setActiveTab("staff")}
-            >
-              <div className="stat-icon-wrap blue">👥</div>
-              <div className="stat-info">
-                <span className="stat-number">{staffList.length}</span>
-                <span className="stat-label">Staff Members</span>
-              </div>
-            </div>
-          )}
-
-          {isAdmin && (
-            <div
-              className={`dash-stat-card ${activeTab === "logs" ? "active" : ""}`}
-              onClick={() => setActiveTab("logs")}
-            >
-              <div className="stat-icon-wrap grey">🛡️</div>
-              <div className="stat-info">
-                <span className="stat-number">{accessLogs.length}</span>
-                <span className="stat-label">Access Audit Logs</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 3. CONTROLS BAR: SEARCH & TABS */}
-        <div className="dash-controls-bar">
-          <div className="dash-tabs-header">
-            <button
-              className={`dash-tab-btn ${activeTab === "profiles" ? "active" : ""}`}
+          {/* Sidebar Navigation Items */}
+          <ul className={styles.sidebarNavMenu}>
+            <li
+              className={`${styles.sidebarNavItem} ${activeTab === "profiles" ? styles.sidebarNavItemActive : ""}`}
               onClick={() => setActiveTab("profiles")}
             >
-              👨‍✈️ Seafarers ({profiles.length})
-            </button>
+              <span className={styles.sidebarNavLabel}>👨‍✈️ Seafarer Candidates</span>
+              <span className={styles.sidebarBadgeCounter}>{profiles.length}</span>
+            </li>
+
             {isAdmin && (
-              <button
-                className={`dash-tab-btn ${activeTab === "enquiries" ? "active" : ""}`}
+              <li
+                className={`${styles.sidebarNavItem} ${activeTab === "enquiries" ? styles.sidebarNavItemActive : ""}`}
                 onClick={() => setActiveTab("enquiries")}
               >
-                🚢 Vessel Management ({enquiries.length})
-              </button>
+                <span className={styles.sidebarNavLabel}>🚢 Vessel Management</span>
+                <span className={styles.sidebarBadgeCounter}>{enquiries.length}</span>
+              </li>
             )}
+
             {isAdmin && (
-              <button
-                className={`dash-tab-btn ${activeTab === "contacts" ? "active" : ""}`}
+              <li
+                className={`${styles.sidebarNavItem} ${activeTab === "contacts" ? styles.sidebarNavItemActive : ""}`}
                 onClick={() => setActiveTab("contacts")}
               >
-                ✉️ Enquiries ({contacts.length})
-              </button>
+                <span className={styles.sidebarNavLabel}>✉️ Contact Submissions</span>
+                <span className={styles.sidebarBadgeCounter}>{contacts.length}</span>
+              </li>
             )}
+
             {isAdmin && (
-              <button
-                className={`dash-tab-btn ${activeTab === "staff" ? "active" : ""}`}
-                onClick={() => setActiveTab("staff")}
-              >
-                ➕ Register Staff ({staffList.length})
-              </button>
+              <>
+                <li
+                  className={`${styles.sidebarNavItem} ${activeTab === "staff-register" || activeTab === "staff-list" ? styles.sidebarNavItemActive : ""}`}
+                  onClick={() => {
+                    setStaffMenuOpen(!staffMenuOpen);
+                    if (activeTab !== "staff-register" && activeTab !== "staff-list") {
+                      setActiveTab("staff-list");
+                    }
+                  }}
+                >
+                  <span className={styles.sidebarNavLabel}>👥 Staff Management</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{ fontSize: "0.75rem", opacity: 0.8 }}>{staffMenuOpen ? "▾" : "▸"}</span>
+                    <span className={styles.sidebarBadgeCounter}>{staffList.length}</span>
+                  </div>
+                </li>
+
+                {staffMenuOpen && (
+                  <ul className={styles.sidebarSubMenu}>
+                    <li
+                      className={`${styles.sidebarSubItem} ${activeTab === "staff-register" ? styles.sidebarSubItemActive : ""}`}
+                      onClick={() => setActiveTab("staff-register")}
+                    >
+                      <span>➕ Create / Register Staff</span>
+                    </li>
+                    <li
+                      className={`${styles.sidebarSubItem} ${activeTab === "staff-list" ? styles.sidebarSubItemActive : ""}`}
+                      onClick={() => setActiveTab("staff-list")}
+                    >
+                      <span>📋 Staff Directory</span>
+                      <span className={styles.sidebarBadgeCounter}>{staffList.length}</span>
+                    </li>
+                  </ul>
+                )}
+              </>
             )}
+
             {isAdmin && (
-              <button
-                className={`dash-tab-btn ${activeTab === "logs" ? "active" : ""}`}
+              <li
+                className={`${styles.sidebarNavItem} ${activeTab === "logs" ? styles.sidebarNavItemActive : ""}`}
                 onClick={() => setActiveTab("logs")}
               >
-                🛡️ Access Audit ({accessLogs.length})
-              </button>
+                <span className={styles.sidebarNavLabel}>🛡️ Security Audit Logs</span>
+                <span className={styles.sidebarBadgeCounter}>{accessLogs.length}</span>
+              </li>
             )}
+          </ul>
+        </div>
+
+        {/* Sidebar Bottom Actions */}
+        <div className={styles.sidebarFooterBox}>
+          <div className={styles.sidebarStatusIndicator}>
+            <span className="status-dot-pulse" /> 24/7 Security Protocol Active
+          </div>
+          <form method="post" action="/api/admin/logout">
+            <button type="submit" className={styles.sidebarLogoutBtn}>
+              🚪 Sign Out
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      {/* 2. RIGHT MAIN VIEWPORT */}
+      <div className={styles.dashMainViewport}>
+        {/* Top Header Bar inside Main Viewport */}
+        <header className={styles.dashTopHeader}>
+          <div className={styles.dashHeaderTitle}>
+            <h2>
+              {activeTab === "profiles" && "👨‍✈️ Seafarer Candidates"}
+              {activeTab === "enquiries" && "🚢 Vessel Management Enquiries"}
+              {activeTab === "contacts" && "✉️ Contact Submissions"}
+              {activeTab === "staff-register" && "➕ Register New Staff Account"}
+              {activeTab === "staff-list" && "👥 Registered Staff Directory"}
+              {activeTab === "logs" && "🛡️ Security Access Audit Logs"}
+            </h2>
+            <p>Sea Hawk Executive Administrative Command Center</p>
           </div>
 
-          <div className="dash-search-box">
+          <div className="dash-search-box" style={{ width: "340px", margin: 0 }}>
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Search by name, rank, vessel, email or ID..."
+              placeholder="Search records..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -346,17 +383,18 @@ export default function StaffDashboardClient({
               </button>
             )}
           </div>
-        </div>
+        </header>
 
-        {/* 4. MAIN CONTENT PANELS */}
-        <div className="dash-content-area">
+        <div className="dash-viewport-body">
+          {/* 4. MAIN CONTENT PANELS */}
+          <div className="dash-content-area">
           {/* TAB 1: SEAFARER PROFILES TABLE */}
           {activeTab === "profiles" && (
             <div className="dash-panel">
-              <div className="panel-top-title">
+              {/* <div className="panel-top-title">
                 <h2>Registered Seafarer Profiles & Resumes</h2>
                 <p>Candidate profiles submitted through Sea Hawk Seafarer Hub. Click any row to view full candidate detail & documents.</p>
-              </div>
+              </div> */}
 
               {filteredProfiles.length === 0 ? (
                 <div className="empty-state-card">
@@ -379,7 +417,7 @@ export default function StaffDashboardClient({
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredProfiles.map((r) => (
+                      {filteredProfiles.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((r) => (
                         <tr
                           key={r.id}
                           className="clickable-row"
@@ -410,6 +448,7 @@ export default function StaffDashboardClient({
                       ))}
                     </tbody>
                   </table>
+                  {renderPaginationControls(filteredProfiles.length)}
                 </div>
               )}
             </div>
@@ -418,10 +457,10 @@ export default function StaffDashboardClient({
           {/* TAB 2: VESSEL MANAGEMENT ENQUIRIES TABLE */}
           {activeTab === "enquiries" && isAdmin && (
             <div className="dash-panel">
-              <div className="panel-top-title">
+              {/* <div className="panel-top-title">
                 <h2>Vessel Management Enquiries</h2>
                 <p>Commercial, Technical, Crew & Marine Management requests. Click any row to inspect complete enquiry info.</p>
-              </div>
+              </div> */}
 
               {filteredEnquiries.length === 0 ? (
                 <div className="empty-state-card">
@@ -444,7 +483,7 @@ export default function StaffDashboardClient({
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredEnquiries.map((r) => (
+                      {filteredEnquiries.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((r) => (
                         <tr
                           key={r.id}
                           className="clickable-row"
@@ -475,6 +514,7 @@ export default function StaffDashboardClient({
                       ))}
                     </tbody>
                   </table>
+                  {renderPaginationControls(filteredEnquiries.length)}
                 </div>
               )}
             </div>
@@ -483,10 +523,10 @@ export default function StaffDashboardClient({
           {/* TAB 3: CONTACT MESSAGES TABLE */}
           {activeTab === "contacts" && isAdmin && (
             <div className="dash-panel">
-              <div className="panel-top-title">
+              {/* <div className="panel-top-title">
                 <h2>Direct Business Contacts</h2>
                 <p>Submissions from the website Contact Us page. Click any row to read complete message content.</p>
-              </div>
+              </div> */}
 
               {filteredContacts.length === 0 ? (
                 <div className="empty-state-card">
@@ -509,7 +549,7 @@ export default function StaffDashboardClient({
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredContacts.map((r) => (
+                      {filteredContacts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((r) => (
                         <tr
                           key={r.id}
                           className="clickable-row"
@@ -540,18 +580,19 @@ export default function StaffDashboardClient({
                       ))}
                     </tbody>
                   </table>
+                  {renderPaginationControls(filteredContacts.length)}
                 </div>
               )}
             </div>
           )}
 
-          {/* TAB 4: STAFF REGISTRATION & MANAGEMENT */}
-          {activeTab === "staff" && isAdmin && (
+          {/* TAB 4A: SUBMODULE 1 - CREATE / REGISTER STAFF */}
+          {activeTab === "staff-register" && isAdmin && (
             <div className="dash-panel">
-              <div className="panel-top-title">
+              {/* <div className="panel-top-title">
                 <h2>➕ Register New Staff Member</h2>
                 <p>Only authorized administrators can create staff user accounts for Sea Hawk portal access.</p>
-              </div>
+              </div> */}
 
               {regMessage && (
                 <div className={`split-alert ${regMessage.type === "error" ? "error" : "success"}`} style={{ marginBottom: "20px" }}>
@@ -560,7 +601,7 @@ export default function StaffDashboardClient({
                 </div>
               )}
 
-              <form className="split-signup-custom-grid" onSubmit={handleRegisterStaff} style={{ marginBottom: "40px" }}>
+              <form className="split-signup-custom-grid" onSubmit={handleRegisterStaff}>
                 <div className="signup-2col-row">
                   <div className="form-field">
                     <label htmlFor="regName">Full Name <span className="req">*</span></label>
@@ -632,14 +673,19 @@ export default function StaffDashboardClient({
                   <span className="btn-arrow">→</span>
                 </button>
               </form>
+            </div>
+          )}
 
-              <div className="panel-top-title">
-                <h3>Registered Staff Directory</h3>
+          {/* TAB 4B: SUBMODULE 2 - REGISTERED STAFF DIRECTORY (DATA) */}
+          {activeTab === "staff-list" && isAdmin && (
+            <div className="dash-panel">
+              {/* <div className="panel-top-title">
+                <h2>📋 Registered Staff Directory</h2>
                 <p>Active staff accounts stored in MongoDB database.</p>
-              </div>
+              </div> */}
 
               {staffList.length === 0 ? (
-                <div className="empty-state">No staff accounts registered yet. Use the form above to add staff members.</div>
+                <div className="empty-state">No staff accounts registered yet. Use the Create / Register Staff submodule to add staff members.</div>
               ) : (
                 <div className="audit-table-wrap">
                   <table className="audit-table">
@@ -654,7 +700,7 @@ export default function StaffDashboardClient({
                       </tr>
                     </thead>
                     <tbody>
-                      {staffList.map((u, idx) => {
+                      {staffList.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((u, idx) => {
                         const isInactive = String(u.status || "active").toLowerCase() === "inactive";
                         return (
                           <tr key={idx}>
@@ -704,6 +750,7 @@ export default function StaffDashboardClient({
                       })}
                     </tbody>
                   </table>
+                  {renderPaginationControls(staffList.length)}
                 </div>
               )}
             </div>
@@ -712,11 +759,6 @@ export default function StaffDashboardClient({
           {/* TAB 5: ACCESS AUDIT LOGS */}
           {activeTab === "logs" && isAdmin && (
             <div className="dash-panel">
-              <div className="panel-top-title">
-                <h2>Security & Access Audit Trail</h2>
-                <p>Every login attempt, view action, and document download is recorded for security compliance. Click any row to inspect audit log details.</p>
-              </div>
-
               <div className="audit-table-wrap">
                 <table className="audit-table">
                   <thead>
@@ -729,7 +771,7 @@ export default function StaffDashboardClient({
                     </tr>
                   </thead>
                   <tbody>
-                    {accessLogs.map((l, i) => (
+                    {accessLogs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((l, i) => (
                       <tr
                         key={i}
                         className="clickable-row"
@@ -762,11 +804,13 @@ export default function StaffDashboardClient({
                     ))}
                   </tbody>
                 </table>
+                {renderPaginationControls(accessLogs.length)}
               </div>
             </div>
           )}
         </div>
       </div>
+    </div>
 
       {/* ================= TOP-RIGHT FLOATING TOAST NOTIFICATION ================= */}
       {toast && (

@@ -182,23 +182,25 @@ export default async function Page({
             />
           ))}
 
-          {/* Top Overview Grid (Text Left, Photo Right) - Matches media_1790835716421.png */}
-          <div className="subpage-top-overview-grid" style={{ marginBottom: "2.5rem" }}>
+          {/* Top Overview Grid (Text Left, Photo Right) */}
+          <div className="subpage-top-overview-grid" style={{ gridTemplateColumns: isFormPage ? "1fr" : undefined, marginBottom: "2.5rem" }}>
             <div className="subpage-top-text">
               <span className="script-subtitle">{pg.crumb || "Sea Hawk Management"}</span>
               <h1 className="subpage-main-h1">{pg.h1}</h1>
               <div className="title-underline left" />
               <p className="subpage-lead-desc">{pg.desc}</p>
             </div>
-            <div className="subpage-top-image">
-              <div className="subpage-photo-card">
-                <Pic i={imgObj} priority sizes="(max-width: 900px) 100vw, 700px" />
+            {!isFormPage && (
+              <div className="subpage-top-image">
+                <div className="subpage-photo-card">
+                  <Pic i={imgObj} priority sizes="(max-width: 900px) 100vw, 700px" />
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* 2-Column Main Layout Grid with Right Sidebar (Matches media_1790835716421.png Exactly) */}
-          <div className="subpage-main-layout-grid">
+          {/* Main Layout Grid (Full Width 1fr for Form pages, 2-Column Grid with Right Sidebar for Content pages) */}
+          <div className="subpage-main-layout-grid" style={{ gridTemplateColumns: isFormPage ? "1fr" : undefined }}>
             <div className="subpage-main-body">
               {/* Dynamic Content Blocks */}
               <div className="subpage-blocks-wrapper">
@@ -209,7 +211,7 @@ export default async function Page({
 
               {/* Form Component (If Enquiry or Profile Page) */}
               {(pg.form === "enquiry" || pg.form === "profile") && (
-                <div className="subpage-form-wrapper" style={{ marginTop: "2rem" }}>
+                <div className="subpage-form-wrapper" style={{ marginTop: pg.blocks.length > 0 ? "2rem" : "0" }}>
                   <GenericForm kind={pg.form} />
                 </div>
               )}
@@ -277,7 +279,7 @@ export default async function Page({
                   </div>
                 ))}
 
-              {/* Fraud Warning Notices */}
+              {/* Fraud Warning Notices for Seafarer Content Pages */}
               {pg.path.startsWith("/seafarers/") && pg.form !== "profile" && (
                 <p className="notice" style={{ marginTop: "2.5rem" }}>
                   See our{" "}
@@ -287,44 +289,37 @@ export default async function Page({
                   . Never pay anyone for placement.
                 </p>
               )}
-              {pg.form === "profile" && (
-                <p className="notice" style={{ marginTop: "2.5rem" }}>
-                  Read the{" "}
-                  <Link href="/recruitment-fraud-advisory/">
-                    Recruitment &amp; Fraud Advisory
-                  </Link>{" "}
-                  before sharing documents.
-                </p>
-              )}
             </div>
 
-            {/* Executive Maritime Sidebar Widget (Right Column of media_1790835716421.png) */}
-            <aside className="subpage-sidebar">
-              <div className="sidebar-widget contact-widget">
-                <span className="widget-subtitle">DIRECT CONTACT</span>
-                <h3>Speak with Our Team</h3>
-                <p>Have questions about vessel management, chartering, technical inspections, or crew deployment?</p>
-                <div className="widget-contact-info">
-                  <p><strong>Phone:</strong> <a href={site.phoneHref}>{site.phone}</a></p>
-                  <p><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></p>
+            {/* Executive Maritime Sidebar Widget (Right Column - Hidden on Form Pages) */}
+            {!isFormPage && (
+              <aside className="subpage-sidebar">
+                <div className="sidebar-widget contact-widget">
+                  <span className="widget-subtitle">DIRECT CONTACT</span>
+                  <h3>Speak with Our Team</h3>
+                  <p>Have questions about vessel management, chartering, technical inspections, or crew deployment?</p>
+                  <div className="widget-contact-info">
+                    <p><strong>Phone:</strong> <a href={site.phoneHref}>{site.phone}</a></p>
+                    <p><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></p>
+                  </div>
+                  <Link href="/contact/" className="primary-gold-btn sidebar-btn">
+                    Get in Touch
+                  </Link>
                 </div>
-                <Link href="/contact/" className="primary-gold-btn sidebar-btn">
-                  Get in Touch
-                </Link>
-              </div>
 
-              <div className="sidebar-widget nav-widget" style={{ marginTop: "2rem" }}>
-                <span className="widget-subtitle">EXPLORE SERVICES</span>
-                <h3>Our Core Solutions</h3>
-                <ul className="sidebar-nav-links">
-                  <li><Link href="/services/commercial-management/">&raquo; Commercial Management</Link></li>
-                  <li><Link href="/services/technical-management/">&raquo; Technical Management</Link></li>
-                  <li><Link href="/services/crew-management/">&raquo; Crew Management</Link></li>
-                  <li><Link href="/services/marine-consultancy/">&raquo; Marine Consultancy</Link></li>
-                  <li><Link href="/services/offshore-marine-support/">&raquo; Offshore Support</Link></li>
-                </ul>
-              </div>
-            </aside>
+                <div className="sidebar-widget nav-widget" style={{ marginTop: "2rem" }}>
+                  <span className="widget-subtitle">EXPLORE SERVICES</span>
+                  <h3>Our Core Solutions</h3>
+                  <ul className="sidebar-nav-links">
+                    <li><Link href="/services/commercial-management/">&raquo; Commercial Management</Link></li>
+                    <li><Link href="/services/technical-management/">&raquo; Technical Management</Link></li>
+                    <li><Link href="/services/crew-management/">&raquo; Crew Management</Link></li>
+                    <li><Link href="/services/marine-consultancy/">&raquo; Marine Consultancy</Link></li>
+                    <li><Link href="/services/offshore-marine-support/">&raquo; Offshore Support</Link></li>
+                  </ul>
+                </div>
+              </aside>
+            )}
           </div>
         </div>
       </section>

@@ -5,6 +5,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { enquiryTypes } from "@/lib/validate";
+import styles from "./ContactForm.module.css";
 
 type Errors = Record<string, string[] | undefined>;
 
@@ -66,7 +67,7 @@ export default function ContactForm() {
   });
 
   return (
-    <div className="contact-form-card-container">
+    <div className={styles.cardContainer}>
       {/* SUCCESS MODAL POPUP DIALOG */}
       {status === "done" && (
         <div className="popup-modal-overlay" role="dialog" aria-modal="true">
@@ -111,31 +112,31 @@ export default function ContactForm() {
       )}
 
       {/* Top Clean Ship Image Header Banner (240px Height) */}
-      <div className="card-ship-banner">
+      <div className={styles.cardShipBanner}>
         <div
-          className="card-ship-bg"
+          className={styles.cardShipBg}
           style={{ backgroundImage: "url('/images/hero-ship-2.webp')" }}
         />
-        <div className="card-ship-overlay" />
-        <div className="card-ship-header-content">
-          <span className="card-ship-subtitle">SEA HAWK INTAKE</span>
-          <h3 className="card-ship-title">Send a Business Enquiry</h3>
+        <div className={styles.cardShipOverlay} />
+        <div className={styles.cardShipHeaderContent}>
+          <span className={styles.cardShipSubtitle}>SEA HAWK INTAKE</span>
+          <h3 className={styles.cardShipTitle}>Send a Business Enquiry</h3>
         </div>
       </div>
 
-      <div className="card-form-body">
-        <form className="animated-enq-form" onSubmit={onSubmit} noValidate>
-          <div className="form-grid-2col">
-            <div className={`anim-field ${focusedField === "name" ? "is-focused" : ""} ${errors.name ? "is-error" : ""}`}>
-              <label htmlFor="name">Full Name <span className="req-star">*</span></label>
+      <div className={styles.cardFormBody}>
+        <form className={styles.animatedForm} onSubmit={onSubmit} noValidate>
+          <div className={styles.formGrid2col}>
+            <div className={`${styles.animField} ${focusedField === "name" ? styles.animFieldFocused : ""} ${errors.name ? styles.animFieldError : ""}`}>
+              <label htmlFor="name">Full Name <span className={styles.reqStar}>*</span></label>
               <input {...a("name")} autoComplete="name" placeholder="e.g. Capt. Rajesh Sharma" required />
-              {errors.name?.[0] && <p className="err-msg" id="name-err">{errors.name[0]}</p>}
+              {errors.name?.[0] && <p className={styles.errMsg} id="name-err">{errors.name[0]}</p>}
             </div>
 
-            <div className={`anim-field ${focusedField === "company" ? "is-focused" : ""} ${errors.company ? "is-error" : ""}`}>
+            <div className={`${styles.animField} ${focusedField === "company" ? styles.animFieldFocused : ""} ${errors.company ? styles.animFieldError : ""}`}>
               <label htmlFor="company">Company / Organization</label>
               <input {...a("company")} autoComplete="organization" placeholder="e.g. Maritime Shipping Lines Ltd" />
-              {errors.company?.[0] && <p className="err-msg" id="company-err">{errors.company[0]}</p>}
+              {errors.company?.[0] && <p className={styles.errMsg} id="company-err">{errors.company[0]}</p>}
             </div>
           </div>
 
@@ -169,8 +170,22 @@ export default function ContactForm() {
             </div>
 
             <div className={`anim-field ${focusedField === "vesselType" ? "is-focused" : ""} ${errors.vesselType ? "is-error" : ""}`}>
-              <label htmlFor="vesselType">Vessel / Project Specifications</label>
-              <input {...a("vesselType")} placeholder="e.g. Bulk Carrier / Oil Tanker / Tugboat" />
+              <label htmlFor="vesselType">Vessel / Project Category</label>
+              <div className="select-custom-wrapper">
+                <select {...a("vesselType")} defaultValue="">
+                  <option value="">Select Vessel Category (Optional)</option>
+                  <option value="Bulk Carrier">Bulk Carrier</option>
+                  <option value="Oil / Chemical Tanker">Oil / Chemical Tanker</option>
+                  <option value="Gas Carrier (LPG/LNG)">Gas Carrier (LPG/LNG)</option>
+                  <option value="Container Ship">Container Ship</option>
+                  <option value="General Cargo / Multi-Purpose">General Cargo / Multi-Purpose</option>
+                  <option value="Offshore Vessel (AHTS/PSV)">Offshore Vessel (AHTS/PSV)</option>
+                  <option value="Passenger / Cruise Ship">Passenger / Cruise Ship</option>
+                  <option value="Tugboat / Barge">Tugboat / Barge</option>
+                  <option value="Other / General Enquiry">Other / General Enquiry</option>
+                </select>
+                <span className="select-arrow">▾</span>
+              </div>
               {errors.vesselType?.[0] && <p className="err-msg" id="vesselType-err">{errors.vesselType[0]}</p>}
             </div>
           </div>
