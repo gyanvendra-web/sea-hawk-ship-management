@@ -2820,19 +2820,26 @@ footer.site .footer-cols {
 .footer-fine {
   border-top: 1px solid rgba(255, 255, 255, 0.15);
   margin-top: 3rem;
-  padding-top: 2rem;
-  padding-bottom: 1.75rem;
+  padding-top: 1.75rem;
+  padding-bottom: 1.5rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 1.1rem;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.footer-copyright {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin: 0;
+  letter-spacing: 0.02em;
 }
 
 .footer-legal-links {
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 1.5rem;
@@ -2852,15 +2859,6 @@ footer.site .footer-cols {
 .footer-legal-links a:hover {
   color: #d49b18;
   text-decoration: underline;
-}
-
-.footer-copyright {
-  color: #94a3b8;
-  font-size: 0.86rem;
-  font-weight: 500;
-  margin: 0;
-  text-align: center;
-  letter-spacing: 0.02em;
 }
 
 /* Forms */
