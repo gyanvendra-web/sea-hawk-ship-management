@@ -23,6 +23,44 @@ type R = Record<string, unknown> & {
 
 type Session = { u: string; r: "admin" | "recruiter" };
 
+const formatIST = (dateStr?: unknown) => {
+  if (!dateStr) return "N/A";
+  const s = String(dateStr);
+  try {
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return s;
+    return d.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }) + " IST";
+  } catch {
+    return s;
+  }
+};
+
+const formatDateIST = (dateStr?: unknown) => {
+  if (!dateStr) return "Recent";
+  const s = String(dateStr);
+  try {
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return s.slice(0, 10);
+    return d.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return s.slice(0, 10);
+  }
+};
+
 export default function StaffDashboardClient({
   session,
   profiles,
@@ -434,7 +472,7 @@ export default function StaffDashboardClient({
                           <td>{String(r.vesselType || "N/A")}</td>
                           <td>{String(r.experience || "N/A")}</td>
                           <td>{String(r.email || r.phone || "N/A")}</td>
-                          <td className="time-col">{r.receivedAt?.slice(0, 10) || "Recent"}</td>
+                          <td className="time-col">{formatDateIST(r.receivedAt)}</td>
                           <td style={{ textAlign: "right" }}>
                             <button
                               type="button"
@@ -500,7 +538,7 @@ export default function StaffDashboardClient({
                           <td>{String(r.vesselType || "N/A")}</td>
                           <td><span className="event-badge green">{String(r.enquiryType || "Management")}</span></td>
                           <td>{String(r.email || "N/A")}</td>
-                          <td className="time-col">{r.receivedAt?.slice(0, 10) || "Recent"}</td>
+                          <td className="time-col">{formatDateIST(r.receivedAt)}</td>
                           <td style={{ textAlign: "right" }}>
                             <button
                               type="button"
@@ -566,7 +604,7 @@ export default function StaffDashboardClient({
                           <td>{String(r.email || "N/A")}</td>
                           <td>{String(r.phone || "N/A")}</td>
                           <td><span className="event-badge green">{String(r.subject || r.enquiryType || "General")}</span></td>
-                          <td className="time-col">{r.receivedAt?.slice(0, 10) || "Recent"}</td>
+                          <td className="time-col">{formatDateIST(r.receivedAt)}</td>
                           <td style={{ textAlign: "right" }}>
                             <button
                               type="button"
@@ -783,7 +821,7 @@ export default function StaffDashboardClient({
                           })
                         }
                       >
-                        <td className="time-col">{String(l.at || "")}</td>
+                        <td className="time-col">{formatIST(l.at)}</td>
                         <td>
                           <span className={`event-badge ${String(l.event).includes("failed") ? "red" : "green"}`}>
                             {String(l.event || "")}
@@ -870,13 +908,16 @@ export default function StaffDashboardClient({
                   );
                 }
 
+                const isDateKey = key === "at" || key === "receivedAt" || key === "createdAt" || (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value));
+                const displayVal = isDateKey ? formatIST(value) : String(value);
+
                 return (
                   <div key={key} style={{ marginBottom: "10px", borderBottom: "1px dashed #e2e8f0", paddingBottom: "8px" }}>
                     <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>
                       {key.replace(/([A-Z])/g, " $1").toUpperCase()}
                     </span>
                     <p style={{ margin: "2px 0 0", color: "#0f172a", fontWeight: 600, fontSize: "0.92rem", wordBreak: "break-word" }}>
-                      {String(value)}
+                      {displayVal}
                     </p>
                   </div>
                 );
