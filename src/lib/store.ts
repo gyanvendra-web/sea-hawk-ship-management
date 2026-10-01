@@ -1,6 +1,8 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
+import { dbConnect } from "./mongodb";
+import { Submission } from "./models/Submission";
 
 export const DATA_DIR = process.env.DATA_DIR ?? path.join(process.cwd(), ".data");
 const UP = path.join(DATA_DIR, "uploads");
@@ -31,16 +33,66 @@ export async function saveFile(f: File): Promise<{ ok: true; stored: string; ori
 }
 export const uploadPath = (n: string) => (/^[0-9a-f-]{36}\.(pdf|png|jpe?g|docx?)$/.test(n) ? path.join(UP, n) : null);
 
-export async function append(kind: string, rec: object) {
+export async function append(kind: string, rec: Record<string, unknown>) {
+  // 1. Try to save in MongoDB Submission collection for persistent cloud storage
+  try {
+    const db = await dbConnect();
+    if (db) {
+      const recId = String(rec.id ?? randomUUID());
+      const recStatus = String(rec.status ?? "New");
+      const recAt = rec.receivedAt ? new Date(String(rec.receivedAt)) : new Date();
+
+      await Submission.create({
+        id: recId,
+        kind,
+        status: recStatus,
+        receivedAt: recAt,
+        data: rec,
+      });
+      console.log(`💾 Saved ${kind} submission to MongoDB`);
+    }
+  } catch (err) {
+    console.warn(`⚠️ MongoDB append warning for ${kind}:`, (err as Error).message);
+  }
+
+  // 2. Backup to Local File System
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.appendFile(path.join(DATA_DIR, `${kind}.jsonl`), JSON.stringify(rec) + "\n", { mode: 0o600 });
   } catch (err) {
-    // Ignore read-only filesystem errors on Vercel Serverless Functions
     console.warn("⚠️ Local filesystem read-only or unavailable (Vercel serverless mode):", (err as Error).message);
   }
 }
+
 export async function readAll<T = Record<string, unknown>>(kind: string): Promise<T[]> {
-  try { return (await fs.readFile(path.join(DATA_DIR, `${kind}.jsonl`), "utf8")).split("\n").filter(Boolean).map((l) => JSON.parse(l)).reverse(); } catch { return []; }
+  // 1. Try reading from MongoDB Submission collection first
+  try {
+    const db = await dbConnect();
+    if (db) {
+      const docs = await Submission.find({ kind }).sort({ createdAt: -1 }).lean();
+      if (docs && docs.length > 0) {
+        return docs.map((d) => ({
+          ...(d.data as Record<string, unknown>),
+          id: d.id,
+          status: d.status,
+          receivedAt: d.receivedAt ? new Date(d.receivedAt).toISOString() : new Date().toISOString(),
+        })) as T[];
+      }
+    }
+  } catch (err) {
+    console.warn(`⚠️ MongoDB readAll warning for ${kind}:`, (err as Error).message);
+  }
+
+  // 2. Fallback to reading local .data/*.jsonl files
+  try {
+    return (await fs.readFile(path.join(DATA_DIR, `${kind}.jsonl`), "utf8"))
+      .split("\n")
+      .filter(Boolean)
+      .map((l) => JSON.parse(l))
+      .reverse();
+  } catch {
+    return [];
+  }
 }
+
 export { randomUUID };
