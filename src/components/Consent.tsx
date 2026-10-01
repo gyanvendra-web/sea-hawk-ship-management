@@ -1,38 +1,150 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const GA = process.env.NEXT_PUBLIC_GA_ID;
-const get = () => document.cookie.split("; ").find((c) => c.startsWith("sh_consent="))?.split("=")[1];
-const set = (v: string) => { document.cookie = `sh_consent=${v}; max-age=15552000; path=/; samesite=lax${location.protocol === "https:" ? "; secure" : ""}`; };
+
+const getConsent = () => {
+  if (typeof document === "undefined") return null;
+  return document.cookie.split("; ").find((c) => c.startsWith("sh_consent="))?.split("=")[1];
+};
+
+const setConsent = (v: string) => {
+  document.cookie = `sh_consent=${v}; max-age=15552000; path=/; samesite=lax${
+    location.protocol === "https:" ? "; secure" : ""
+  }`;
+};
 
 function loadGA() {
-  if (!GA || document.getElementById("ga4")) return;
+  if (!GA || typeof document === "undefined" || document.getElementById("ga4")) return;
   const w = window as unknown as { dataLayer: unknown[]; gtag: (...a: unknown[]) => void };
-  w.dataLayer = w.dataLayer || []; w.gtag = function () { w.dataLayer.push(arguments); };
-  const s = document.createElement("script"); s.id = "ga4"; s.async = true; s.src = `https://www.googletagmanager.com/gtag/js?id=${GA}`; document.head.appendChild(s);
-  w.gtag("js", new Date()); w.gtag("config", GA, { anonymize_ip: true });
-  document.addEventListener("click", (e) => { // click-to-call / click-to-email events
-    const a = (e.target as HTMLElement).closest("a"); const h = a?.getAttribute("href") ?? "";
-    if (h.startsWith("tel:")) w.gtag("event", "click_to_call"); else if (h.startsWith("mailto:")) w.gtag("event", "click_to_email");
-  });
+  w.dataLayer = w.dataLayer || [];
+  w.gtag = function () {
+    w.dataLayer.push(arguments);
+  };
+  const s = document.createElement("script");
+  s.id = "ga4";
+  s.async = true;
+  s.src = `https://www.googletagmanager.com/gtag/js?id=${GA}`;
+  document.head.appendChild(s);
+  w.gtag("js", new Date());
+  w.gtag("config", GA, { anonymize_ip: true });
 }
 
 export function ConsentBanner() {
   const [open, setOpen] = useState(false);
-  useEffect(() => { const c = get(); if (c === "accepted") loadGA(); if (!c && GA) setOpen(true); }, []);
+
+  useEffect(() => {
+    const c = getConsent();
+    if (c === "accepted") {
+      loadGA();
+    } else if (!c) {
+      setOpen(true);
+    }
+  }, []);
+
   if (!open) return null;
-  const choose = (v: string) => { set(v); setOpen(false); if (v === "accepted") loadGA(); };
+
+  const choose = (v: string) => {
+    setConsent(v);
+    setOpen(false);
+    if (v === "accepted") loadGA();
+  };
+
   return (
-    <div role="dialog" aria-labelledby="cookie-dialog-title" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#ffffff", borderTop: "3px solid #0b2233", padding: "1rem 1.5rem", zIndex: 9000, boxShadow: "0 -10px 30px rgba(0,0,0,0.15)" }}>
-      <h2 id="cookie-dialog-title" className="sr-only">Cookie Preferences</h2>
-      <p style={{ maxWidth: "70ch", color: "#334155", fontSize: "0.9rem", lineHeight: "1.5" }}>We use essential cookies to operate our website. With your consent, we also use analytics to improve user experience. See our <Link href="/privacy-policy/" style={{ color: "#0b2233", fontWeight: 700, textDecoration: "underline" }}>Privacy Policy</Link>.</p>
-      <div className="btns" style={{ marginTop: "0.75rem", display: "flex", gap: "0.75rem" }}>
-        <button type="button" className="btn ghost" style={{ minHeight: "44px", color: "#0b2233", borderColor: "#0b2233" }} onClick={() => choose("rejected")}>Reject all</button>
-        <button type="button" className="btn" style={{ minHeight: "44px", background: "#0b2233", color: "#ffffff", borderColor: "#0b2233" }} onClick={() => choose("accepted")}>Accept all</button>
+    <div
+      role="dialog"
+      aria-labelledby="cookie-dialog-title"
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        left: "20px",
+        maxWidth: "520px",
+        marginLeft: "auto",
+        background: "#0b2233",
+        color: "#ffffff",
+        borderLeft: "4px solid #d49b18",
+        padding: "1.25rem 1.5rem",
+        borderRadius: "8px",
+        zIndex: 99999,
+        boxShadow: "0 12px 35px rgba(0,0,0,0.35)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+        <span style={{ fontSize: "1.2rem" }}>🍪</span>
+        <h3 id="cookie-dialog-title" style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, color: "#ffffff" }}>
+          Cookie &amp; Privacy Choices
+        </h3>
       </div>
-    </div>);
+      <p style={{ margin: "0 0 1rem", color: "#cbd5e1", fontSize: "0.86rem", lineHeight: "1.5" }}>
+        We use essential cookies to ensure site functionality. With your consent, we also collect anonymized usage analytics to improve our services. Read our{" "}
+        <Link href="/cookie-policy/" style={{ color: "#d49b18", fontWeight: 700, textDecoration: "underline" }}>
+          Cookie Policy
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy-policy/" style={{ color: "#d49b18", fontWeight: 700, textDecoration: "underline" }}>
+          Privacy Policy
+        </Link>.
+      </p>
+      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
+        <button
+          type="button"
+          style={{
+            background: "transparent",
+            color: "#ffffff",
+            border: "1px solid rgba(255,255,255,0.4)",
+            padding: "8px 16px",
+            borderRadius: "4px",
+            fontWeight: 600,
+            fontSize: "0.85rem",
+            cursor: "pointer",
+          }}
+          onClick={() => choose("rejected")}
+        >
+          Reject Optional
+        </button>
+        <button
+          type="button"
+          style={{
+            background: "#d49b18",
+            color: "#0b2233",
+            border: "none",
+            padding: "8px 20px",
+            borderRadius: "4px",
+            fontWeight: 800,
+            fontSize: "0.85rem",
+            cursor: "pointer",
+          }}
+          onClick={() => choose("accepted")}
+        >
+          Accept All
+        </button>
+      </div>
+    </div>
+  );
 }
+
 export function CookieSettings() {
-  return <button className="btn ghost" style={{ color: "#fff", borderColor: "#fff", padding: ".4rem .9rem", minHeight: 44 }} onClick={() => { document.cookie = "sh_consent=; max-age=0; path=/"; location.reload(); }}>Cookie settings</button>;
+  return (
+    <button
+      className="btn ghost"
+      style={{
+        color: "#ffffff",
+        borderColor: "rgba(255,255,255,0.5)",
+        padding: "0.4rem 0.9rem",
+        minHeight: 44,
+        background: "transparent",
+        borderRadius: "4px",
+        cursor: "pointer",
+      }}
+      onClick={() => {
+        document.cookie = "sh_consent=; max-age=0; path=/";
+        location.reload();
+      }}
+    >
+      Cookie settings
+    </button>
+  );
 }
