@@ -155,6 +155,9 @@ export default function About() {
                 className="about-image-card"
                 style={{ backgroundImage: `url(/images/hero-ship-1.webp)` }}
               />
+              <div className="about-image-badge">
+                ★ EXCELLENCE IN SHIP MANAGEMENT
+              </div>
             </div>
           </div>
 

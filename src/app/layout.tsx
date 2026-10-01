@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   authors: [{ name: site.name }],
   creator: site.name,
   publisher: site.name,
+  icons: {
+    icon: "/images/logo.svg",
+    shortcut: "/images/logo.svg",
+    apple: "/images/logo.svg",
+  },
   openGraph: {
     title: "Ship Management Company in India | Sea Hawk Ship Management",
     description: "Premier ship management company in India providing commercial management, technical management, crew management, and marine consultancy services.",
@@ -91,6 +96,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${archivo.variable} ${publicSans.variable}`}>
       <head>
+        <link rel="icon" href="/images/logo.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/images/logo.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preload" as="image" href="/images/hero-ship-1.webp" type="image/webp" fetchPriority="high" />

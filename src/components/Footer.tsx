@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="site">
       <div className="nautical-rope-divider" aria-hidden="true" />
-      <div className="wrap">
+      <div className="wrap footer-wrap">
         <div className="cols footer-cols">
           {/* Column 1: Company Profile, Description & Social Media */}
           <div className="footer-col brand-col">
@@ -13,11 +13,11 @@ export default function Footer() {
             <p className="footer-desc">
               Commercial, technical, crew and marine advisory support for global ship owners, vessel operators and seafarers.
             </p>
-            <p className="footer-warning-note">
-              Sea Hawk does not authorise unofficial agents to guarantee jobs. Verify recruitment messages through our official channels before sharing documents or making any payment.
-            </p>
+            <div className="footer-warning-note">
+              <span>⚠️ <strong>Fraud Notice:</strong> Sea Hawk never charges seafarers recruitment fees. Verify recruitment messages through official channels.</span>
+            </div>
             <div className="footer-social-wrap">
-              <span className="social-heading">Follow us:</span>
+              <span className="social-heading">Connect With Us</span>
               <div className="social-icons-row">
                 <a href="https://facebook.com/seahawkshipmanagement" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="footer-social-btn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -51,34 +51,35 @@ export default function Footer() {
               <li><Link href="/services/technical-management/">Technical Management</Link></li>
               <li><Link href="/services/crew-management/">Crew Management</Link></li>
               <li><Link href="/services/marine-consultancy/">Marine Consultancy</Link></li>
-              <li><Link href="/services/offshore-marine-support/">Offshore &amp; Marine Support</Link></li>
+              <li><Link href="/services/offshore-marine-support/">Offshore Support</Link></li>
             </ul>
           </div>
 
-          {/* Column 3: Seafarers & Company */}
+          {/* Column 3: Seafarers & Quick Links */}
           <div className="footer-col">
-            <h3 className="footer-heading">Seafarers &amp; Company</h3>
+            <h3 className="footer-heading">Seafarers &amp; Links</h3>
             <ul className="footer-links">
               <li><Link href="/seafarers/vacancies/">Current Vacancies</Link></li>
-              <li><Link href="/seafarers/profile/">Register / Update Profile</Link></li>
-              <li><Link href="/seafarers/guidance/">Training &amp; Guidance</Link></li>
-              <li><Link href="/recruitment-fraud-advisory/">Recruitment Fraud Advisory</Link></li>
-              <li><Link href="/about/">About Us</Link></li>
-              <li><Link href="/about/leadership/">Leadership</Link></li>
-              <li><Link href="/about/quality-safety-compliance/">Quality &amp; Compliance</Link></li>
+              <li><Link href="/seafarers/profile/">Register Profile</Link></li>
+              <li><Link href="/seafarers/guidance/">Seafarer Guidance</Link></li>
+              <li><Link href="/about/">About Sea Hawk</Link></li>
+              <li><Link href="/about/leadership/">Leadership Team</Link></li>
+              <li><Link href="/about/quality-safety-compliance/">Quality &amp; Safety</Link></li>
+              <li><Link href="/recruitment-fraud-advisory/">Fraud Advisory</Link></li>
               <li><Link href="/admin/login/">Staff Portal</Link></li>
             </ul>
           </div>
 
-          {/* Column 4: Contact & Address (Moved to 4th column as requested) */}
+          {/* Column 4: Contact & Location */}
           <div className="footer-col address-col">
             <h3 className="footer-heading">Contact &amp; Location</h3>
             <p className="footer-company-legal">{site.legalName}</p>
             <address className="footer-address">
-              Unit No. S-28, Eighth Floor, URBTECH NPX, Sector 153, Noida, Gautam Buddha Nagar, Uttar Pradesh 201301, India
+              Unit No. S-28, 8th Floor, URBTECH NPX, Sector 153, Noida, UP 201301, India
             </address>
             <div className="footer-contact-details">
-              <p><strong>Phone:</strong> <a href={site.phoneHref}>{site.phone}</a> | <a href={site.landlineHref}>{site.landline}</a></p>
+              <p><strong>Mobile:</strong> <a href={site.phoneHref}>{site.phone}</a></p>
+              <p><strong>Landline:</strong> <a href={site.landlineHref}>{site.landline}</a></p>
               <p><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></p>
             </div>
           </div>

@@ -52,14 +52,14 @@ const services: { href: string; t: string; d: string; i: Img; category: string }
 ];
 
 const seafarerBenefits = [
-  { label: "Guidelines for update Seafarer Profile", href: "/seafarers/profile-guidance/" },
-  { label: "TME/GME Training Guidelines", href: "/seafarers/tme-gme-guidelines/" },
-  { label: "GPR Training Guidelines", href: "/seafarers/gpr-guidelines/" },
-  { label: "STCW Training Guidelines", href: "/seafarers/stcw-guidelines/" },
-  { label: "SID Card Guidelines", href: "/seafarers/sid-guidelines/" },
+  { label: "Guidelines for update Seafarer Profile", href: "/seafarers/profile/" },
+  { label: "TME/GME Training Guidelines", href: "/seafarers/guidance/tme-gme/" },
+  { label: "GPR Training Guidelines", href: "/seafarers/guidance/gpr/" },
+  { label: "STCW Training Guidelines", href: "/seafarers/guidance/stcw/" },
+  { label: "SID Card Guidelines", href: "/seafarers/guidance/sid-card/" },
   { label: "Latest Vacancy updates", href: "/seafarers/vacancies/" },
-  { label: "DNS/B.Sc. Nautical Science Guidelines", href: "/seafarers/dns-nautical-science/" },
-  { label: "COC Guidelines", href: "/seafarers/coc-guidelines/" },
+  { label: "DNS/B.Sc. Nautical Science Guidelines", href: "/seafarers/guidance/dns-bsc-nautical-science/" },
+  { label: "COC Guidelines", href: "/seafarers/guidance/coc/" },
 ];
 
 const ld = {
