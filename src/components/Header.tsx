@@ -8,7 +8,7 @@ import { nav, site } from "@/lib/site";
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [currentDate, setCurrentDate] = useState("");
+  const [currentDate, setCurrentDate] = useState("Monday 28th September 2026");
   const pathname = usePathname();
 
   useEffect(() => {
@@ -27,7 +27,9 @@ export default function Header() {
       {/* 1. TOP UTILITY BAR (GOLD) */}
       <div className="top-utility-bar">
         <div className="wrap utility-wrap">
-          <div className="utility-date">{currentDate || "Monday 28th September 2026"}</div>
+          <div className="utility-date" suppressHydrationWarning>
+            {currentDate}
+          </div>
           <div className="utility-right">
             <Link href="/admin/login/" className="utility-staff-btn">
               <span>🔒 Staff Portal</span>
@@ -105,23 +107,9 @@ export default function Header() {
                 >
                   <div className="nav-item-header">
                     <Link href={n.href} onClick={() => { setMobileOpen(false); setOpenDropdown(null); }}>
-                      {n.label.toUpperCase()}
+                      <span>{n.label.toUpperCase()}</span>
+                      {n.children && <span className="nav-arrow-symbol" aria-hidden="true"> ▾</span>}
                     </Link>
-                    {n.children && (
-                      <button
-                        type="button"
-                        className="dropdown-arrow"
-                        aria-expanded={isOpen}
-                        aria-label={`Toggle ${n.label} menu`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setOpenDropdown(isOpen ? null : n.href);
-                        }}
-                      >
-                        ▾
-                      </button>
-                    )}
                   </div>
                   {n.children && (
                     <ul className="dropdown-menu">

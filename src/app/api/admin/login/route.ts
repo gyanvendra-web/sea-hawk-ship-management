@@ -125,7 +125,7 @@ export async function POST(req: Request) {
     res.cookies.set(COOKIE, await sign({ u: loggedUser, r: userRole, exp: Date.now() + 8 * 3600_000 }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       path: "/",
       maxAge: 8 * 3600,
     });

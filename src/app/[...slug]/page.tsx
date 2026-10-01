@@ -155,6 +155,7 @@ export default async function Page({
 
   const imgObj = pageImage[pg.path] || pageImage["/services/"];
   const heroImg = imgObj.src;
+  const isFormPage = pg.form === "enquiry" || pg.form === "profile";
 
   return (
     <>
@@ -181,8 +182,8 @@ export default async function Page({
             />
           ))}
 
-          {/* Top Overview Grid (Text Left, Large 420px Photo Right) */}
-          <div className="subpage-top-overview-grid">
+          {/* Top Overview Grid (Text Left, Photo Right) - Matches media_1790835716421.png */}
+          <div className="subpage-top-overview-grid" style={{ marginBottom: "2.5rem" }}>
             <div className="subpage-top-text">
               <span className="script-subtitle">{pg.crumb || "Sea Hawk Management"}</span>
               <h1 className="subpage-main-h1">{pg.h1}</h1>
@@ -196,7 +197,7 @@ export default async function Page({
             </div>
           </div>
 
-          {/* Main Layout Grid with Executive Sidebar (Zero Blank Spaces) */}
+          {/* 2-Column Main Layout Grid with Right Sidebar (Matches media_1790835716421.png Exactly) */}
           <div className="subpage-main-layout-grid">
             <div className="subpage-main-body">
               {/* Dynamic Content Blocks */}
@@ -206,9 +207,9 @@ export default async function Page({
                 ))}
               </div>
 
-              {/* Interactive Form Intake */}
+              {/* Form Component (If Enquiry or Profile Page) */}
               {(pg.form === "enquiry" || pg.form === "profile") && (
-                <div className="subpage-form-wrapper" style={{ marginTop: "3rem" }}>
+                <div className="subpage-form-wrapper" style={{ marginTop: "2rem" }}>
                   <GenericForm kind={pg.form} />
                 </div>
               )}
@@ -297,7 +298,7 @@ export default async function Page({
               )}
             </div>
 
-            {/* Executive Maritime Sidebar Widget */}
+            {/* Executive Maritime Sidebar Widget (Right Column of media_1790835716421.png) */}
             <aside className="subpage-sidebar">
               <div className="sidebar-widget contact-widget">
                 <span className="widget-subtitle">DIRECT CONTACT</span>
@@ -312,7 +313,7 @@ export default async function Page({
                 </Link>
               </div>
 
-              <div className="sidebar-widget nav-widget">
+              <div className="sidebar-widget nav-widget" style={{ marginTop: "2rem" }}>
                 <span className="widget-subtitle">EXPLORE SERVICES</span>
                 <h3>Our Core Solutions</h3>
                 <ul className="sidebar-nav-links">
@@ -330,3 +331,4 @@ export default async function Page({
     </>
   );
 }
+

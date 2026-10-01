@@ -96,16 +96,9 @@ export default function HeroSlider() {
 
   return (
     <div className="hero-slider-container">
-      {/* Top Animated Progress Bar */}
-      <div className="hero-progress-bar-wrap">
+      {/* Hidden Progress Bar placeholder for exact DOM tree matching */}
+      <div className="hero-progress-bar-wrap" style={{ display: "none" }}>
         <div key={current} className="hero-progress-bar" />
-      </div>
-
-      {/* Slide Counter Badge */}
-      <div className="hero-counter-badge">
-        <span className="current-num">0{current + 1}</span>
-        <span className="divider">/</span>
-        <span className="total-num">0{slides.length}</span>
       </div>
 
       {/* Track & Sliding Items */}
