@@ -168,12 +168,36 @@ export default async function Page({
 
       <section className="section subpage-content-section">
         <div className="wrap">
-          {ld && (
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
-            />
-          )}
+      {/* BreadcrumbList JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: site.url,
+              },
+              ...crumbs(pg.path).map((c, idx) => ({
+                "@type": "ListItem",
+                position: idx + 2,
+                name: c.name,
+                item: `${site.url}${c.href}`,
+              })),
+            ],
+          }),
+        }}
+      />
+      {ld && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+        />
+      )}
           {jobs.map((j) => (
             <script
               key={j.identifier.value}
