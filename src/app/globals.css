@@ -2818,19 +2818,23 @@ footer.site .footer-cols {
 }
 
 .footer-fine {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  margin-top: 3.5rem;
-  padding-top: 1.75rem;
-  padding-bottom: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin-top: 3rem;
+  padding-top: 2rem;
+  padding-bottom: 1.75rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1.25rem;
+  justify-content: center;
+  text-align: center;
+  gap: 1.1rem;
 }
 
 .footer-legal-links {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 1.5rem;
   list-style: none;
   padding: 0;
@@ -2840,18 +2844,23 @@ footer.site .footer-cols {
 .footer-legal-links a {
   color: #94a3b8;
   font-size: 0.88rem;
+  font-weight: 500;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .footer-legal-links a:hover {
   color: #d49b18;
+  text-decoration: underline;
 }
 
 .footer-copyright {
-  color: #64748b;
-  font-size: 0.88rem;
+  color: #94a3b8;
+  font-size: 0.86rem;
+  font-weight: 500;
   margin: 0;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 /* Forms */
