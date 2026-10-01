@@ -86,11 +86,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Footer Bottom Fine Bar */}
-        <div className="fine footer-fine">
-          <p className="footer-copyright">
-            © {new Date().getFullYear()} {site.legalName}. All rights reserved.
-          </p>
+        {/* Footer Legal Menus (Above Divider Line - Right Aligned) */}
+        <div className="footer-menu-top-row">
           <ul className="footer-legal-links">
             <li><Link href="/privacy-policy/">Privacy Policy</Link></li>
             <li><Link href="/terms/">Terms of Use</Link></li>
@@ -99,6 +96,13 @@ export default function Footer() {
             <li><Link href="/accessibility/">Accessibility</Link></li>
             <li><Link href="/sitemap/">Sitemap</Link></li>
           </ul>
+        </div>
+
+        {/* Footer Divider Line & Bottom Copyright (Below Divider Line - Centered) */}
+        <div className="fine footer-fine">
+          <p className="footer-copyright">
+            © {new Date().getFullYear()} {site.legalName}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>
