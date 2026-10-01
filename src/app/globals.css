@@ -17,11 +17,11 @@ p{margin:0 0 1em;max-width:68ch} a{color:var(--flag-blue)} a:hover{color:var(--i
    3-TIER HEADER SYSTEM (Gold Utility + White Contact/Logo + Navy Navbar)
    ========================================================================== */
 header.site-header-group {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9999 !important;
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
 /* 1. Top Utility Bar (Gold) */
@@ -2877,14 +2877,16 @@ form.enq{display:grid;gap:1.1rem;max-width:40rem}
 
 /* Global Mobile Safeguard */
 html, body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
+  overflow-x: clip;
+  max-width: 100vw;
   width: 100%;
 }
 
 @media (max-width: 64rem) {
   header.site-header-group {
-    position: relative;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important;
     width: 100%;
   }
 
